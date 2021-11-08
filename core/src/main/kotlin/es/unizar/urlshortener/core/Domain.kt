@@ -1,5 +1,7 @@
 package es.unizar.urlshortener.core
 
+
+import com.google.zxing.common.BitMatrix
 import java.time.OffsetDateTime
 import java.util.*
 
@@ -19,7 +21,16 @@ data class ShortUrl(
     val hash: String,
     val redirection: Redirection,
     val created: OffsetDateTime = OffsetDateTime.now(),
-    val properties: ShortUrlProperties = ShortUrlProperties()
+    val properties: ShortUrlProperties = ShortUrlProperties(),
+)
+
+/**
+ * A [QRFromUrl] specifies the [qr] that is obtained from [url]
+ */
+data class QRFromUrl(
+    val url: ShortUrl,
+    val qr: BitMatrix,
+    val properties: QRProperties
 )
 
 /**
@@ -51,4 +62,12 @@ data class ClickProperties(
     val browser: String? = null,
     val platform: String? = null,
     val country: String? = null
+)
+
+/**
+ * A [QRProperties] is the bag of properties that a [QRFromUrl] must have.
+ */
+data class QRProperties(
+    val width: Int = 200,
+    val height: Int = 200,
 )

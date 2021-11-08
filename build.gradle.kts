@@ -16,6 +16,8 @@ subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
     repositories {
         mavenCentral()
+        jcenter()
+        google()
     }
     tasks.withType<KotlinCompile> {
         kotlinOptions {
@@ -28,6 +30,13 @@ subprojects {
     }
     dependencies {
         "implementation"("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+        // https://mvnrepository.com/artifact/com.google.zxing/javase
+        "implementation"("com.google.zxing:javase:3.4.0")
+        // https://mvnrepository.com/artifact/com.google.zxing/core
+        "implementation"("com.google.zxing:core:3.4.0")
+        // https://mvnrepository.com/artifact/com.google.zxing/zxing-parent
+        "implementation"("com.google.zxing:zxing-parent:3.4.0")
+        "implementation"("com.budiyev.android:code-scanner:2.1.0")
     }
 }
 
@@ -57,7 +66,6 @@ project(":delivery") {
         "implementation"("com.fasterxml.jackson.module:jackson-module-kotlin")
         "implementation"("commons-validator:commons-validator:1.6")
         "implementation"("com.google.guava:guava:23.0")
-
         "testImplementation"("org.springframework.boot:spring-boot-starter-test")
         "testImplementation"("org.mockito.kotlin:mockito-kotlin:3.2.0")
     }
@@ -77,9 +85,14 @@ project(":app") {
         "implementation"("org.springframework.boot:spring-boot-starter")
         "implementation"( "org.webjars:bootstrap:3.3.5")
         "implementation"("org.webjars:jquery:2.1.4")
-
         "runtimeOnly"("org.hsqldb:hsqldb")
-
+        // https://mvnrepository.com/artifact/com.google.zxing/javase
+        "implementation"("com.google.zxing:javase:3.4.0")
+        // https://mvnrepository.com/artifact/com.google.zxing/core
+        "implementation"("com.google.zxing:core:3.4.0")
+        // https://mvnrepository.com/artifact/com.google.zxing/zxing-parent
+        "implementation"("com.google.zxing:zxing-parent:3.4.0")
+        "implementation"("com.budiyev.android:code-scanner:2.1.0")
         "testImplementation"("org.springframework.boot:spring-boot-starter-test")
         "testImplementation"("org.springframework.boot:spring-boot-starter-web")
         "testImplementation"("org.springframework.boot:spring-boot-starter-jdbc")
