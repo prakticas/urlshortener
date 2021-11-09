@@ -1,6 +1,7 @@
 package es.unizar.urlshortener.core
 
 import com.google.zxing.common.BitMatrix
+import org.jetbrains.annotations.TestOnly
 
 /**
  * [ClickRepositoryService] is the port to the repository that provides persistence to [Clicks][Click].
@@ -41,5 +42,6 @@ interface HashService {
 interface QRService {
     fun createQR(url: String): QRFromUrl
     fun encodeQR(url: String): BitMatrix
+    @TestOnly
     fun decodeQR(qr: QRFromUrl): String
 }
