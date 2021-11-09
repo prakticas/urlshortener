@@ -42,7 +42,8 @@ interface UrlShortenerController {
  */
 data class ShortUrlDataIn(
     val url: String,
-    val sponsor: String? = null
+    val sponsor: String? = null,
+    val withQR: Boolean?
 )
 
 /**
@@ -50,7 +51,7 @@ data class ShortUrlDataIn(
  */
 data class ShortUrlDataOut(
     val url: URI? = null,
-    val properties: Map<String, Any> = emptyMap()
+    val properties: Map<String, Any> = emptyMap(),
 )
 
 
@@ -85,7 +86,11 @@ class UrlShortenerControllerImpl(
             )
         ).let {
             val h = HttpHeaders()
-            val url = linkTo<UrlShortenerControllerImpl> { redirectTo(it.hash, request) }.toUri()
+            val url: URI = if (data.withQR == true){
+                linkTo<QRControllerImpl> { redirectTo(it.hash, request) }.toUri()
+            } else {
+                linkTo<UrlShortenerControllerImpl> { redirectTo(it.hash, request) }.toUri()
+            }
             h.location = url
             val response = ShortUrlDataOut(
                 url = url,

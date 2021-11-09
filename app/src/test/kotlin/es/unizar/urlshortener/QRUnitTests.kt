@@ -27,7 +27,7 @@ import org.mockito.kotlin.mock
 
 
 @SpringBootTest
-class QRUnitTests() {
+class QRUnitTests {
 
     @Autowired
     private val qrService = QRServiceImpl()

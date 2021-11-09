@@ -30,22 +30,15 @@ interface QRController {
      *
      * **Note**: Delivery of use cases [RedirectUseCase] and [LogClickUseCase].
      */
-    fun redirectTo(request: HttpServletRequest): ResponseEntity<ByteArray>
+    fun redirectTo(@PathVariable id: String, request: HttpServletRequest): ResponseEntity<ByteArray>
 
     /**
      * Creates a qr from url from details provided in [data].
      *
      * **Note**: Delivery of use case [CreateShortUrlUseCase].
      */
-    fun qrGenerator(data: QRDataIn, request: HttpServletRequest): ResponseEntity<QRURIOut>
+    fun qrGenerator(data: ShortUrlDataIn, request: HttpServletRequest): ResponseEntity<QRURIOut>
 }
-
-/**
- * Data required to create a qr from url.
- */
-data class QRDataIn(
-    val hash: String
-)
 
 /**
  * Data returned after the creation of a qr from url.
@@ -66,19 +59,20 @@ data class QRURIOut(
 class QRControllerImpl(
     val qrUseCase: QRUseCase,
 ): QRController {
-    @GetMapping("/qr", produces = [MediaType.IMAGE_PNG_VALUE])
+    @GetMapping("/qr/{id:.*}", produces = [MediaType.IMAGE_PNG_VALUE])
     override fun redirectTo(
+        @PathVariable id: String,
         request: HttpServletRequest
     ): ResponseEntity<ByteArray> {
         //TODO:
         val h = HttpHeaders()
-        val response = qrUseCase.create(ShortUrl(hash = "kldwfhsuikdf", redirection = Redirection(target = "https://google.com")))
+        val response = qrUseCase.create(ShortUrl(hash = id, redirection = Redirection(target = "https://google.com")))
         return ResponseEntity(response, h, HttpStatus.CREATED)
     }
 
     @PostMapping("/qr", consumes = [MediaType.APPLICATION_JSON_VALUE])
     override fun qrGenerator(
-        data: QRDataIn,
+        data: ShortUrlDataIn,
         request: HttpServletRequest
     ): ResponseEntity<QRURIOut> {
         TODO("Not yet implemented")
