@@ -58,11 +58,11 @@ class HttpRequestTest {
     
     @Test
     fun `redirectTo returns a redirect when the key exists`() {
-        val target = shortUrl("http://ejemplo.com/").headers.location
+        val target = shortUrl("https://google.com/").headers.location
         require(target != null)
         val response = restTemplate.getForEntity(target, String::class.java)
         assertThat(response.statusCode).isEqualTo(HttpStatus.TEMPORARY_REDIRECT)
-        assertThat(response.headers.location).isEqualTo(URI.create("http://ejemplo.com/"))
+        assertThat(response.headers.location).isEqualTo(URI.create("https://google.com/"))
 
         assertThat(JdbcTestUtils.countRowsInTable(jdbcTemplate, "click")).isEqualTo(1)
     }

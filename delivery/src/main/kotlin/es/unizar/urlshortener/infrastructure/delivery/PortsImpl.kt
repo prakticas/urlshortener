@@ -34,7 +34,7 @@ class ValidatorServiceImpl : ValidatorService {
     }
 
     companion object {
-        val urlValidator = UrlValidator(arrayOf("http", "https"))
+        val urlValidator = UrlValidator(arrayOf("https"))
     }
 }
 
