@@ -2,10 +2,12 @@ package es.unizar.urlshortener.infrastructure.delivery
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import es.unizar.urlshortener.core.ClickProperties
+import es.unizar.urlshortener.core.QRFromUrl
 import es.unizar.urlshortener.core.ShortUrl
 import es.unizar.urlshortener.core.ShortUrlProperties
 import es.unizar.urlshortener.core.usecases.LogClickUseCase
 import es.unizar.urlshortener.core.usecases.CreateShortUrlUseCase
+import es.unizar.urlshortener.core.usecases.QRUseCase
 import es.unizar.urlshortener.core.usecases.RedirectUseCase
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpHeaders
@@ -64,7 +66,8 @@ data class ShortUrlDataOut(
 class UrlShortenerControllerImpl(
     val redirectUseCase: RedirectUseCase,
     val logClickUseCase: LogClickUseCase,
-    val createShortUrlUseCase: CreateShortUrlUseCase
+    val createShortUrlUseCase: CreateShortUrlUseCase,
+    val qrUseCase: QRUseCase
 ) : UrlShortenerController {
 
     @GetMapping("/tiny-{id:.*}")
@@ -86,10 +89,12 @@ class UrlShortenerControllerImpl(
             )
         ).let {
             val h = HttpHeaders()
-            val url: URI = if (data.withQR == true){
-                linkTo<QRControllerImpl> { redirectTo(it.hash, request) }.toUri()
+            val url: URI
+            if (data.withQR == true){
+                url = linkTo<QRController.QRControllerImpl> { redirectTo(it.hash, request) }.toUri()
+                qrUseCase.create(url = QRFromUrl(url = it, qr = ByteArray(2)))
             } else {
-                linkTo<UrlShortenerControllerImpl> { redirectTo(it.hash, request) }.toUri()
+                url = linkTo<UrlShortenerControllerImpl> { redirectTo(it.hash, request) }.toUri()
             }
             h.location = url
             val response = ShortUrlDataOut(

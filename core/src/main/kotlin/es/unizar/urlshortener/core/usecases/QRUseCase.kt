@@ -18,15 +18,22 @@ import java.io.ByteArrayOutputStream
  * **Note**: This is an example of functionality.
  */
 interface QRUseCase {
-    fun create(url: ShortUrl, data: QRProperties = QRProperties()): ByteArray
+    fun createQR(url: ShortUrl, data: QRProperties = QRProperties()): ByteArray
+    fun create(url: QRFromUrl): QRFromUrl
 }
 
-class QRUseCaseImpl(private val qrService: QRService, private val validatorService: ValidatorService) : QRUseCase {
+class QRUseCaseImpl(private val qrRepositoryService: QRRepositoryService,
+                    private val qrService: QRService,
+                    private val validatorService: ValidatorService) : QRUseCase {
 
-    override fun create(url: ShortUrl, data: QRProperties): ByteArray {
+    override fun createQR(url: ShortUrl, data: QRProperties): ByteArray {
         val urlName = url.redirection.target
         if(!validatorService.isValid(urlName)) throw InvalidUrlException(urlName)
         return qrService.createQR(url, data).qr
+    }
+
+    override fun create(url: QRFromUrl): QRFromUrl{
+        return qrRepositoryService.save(url)
     }
 
 }

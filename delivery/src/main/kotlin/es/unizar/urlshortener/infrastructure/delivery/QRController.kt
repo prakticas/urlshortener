@@ -1,13 +1,8 @@
 package es.unizar.urlshortener.infrastructure.delivery
 
-import es.unizar.urlshortener.core.QRProperties
-import es.unizar.urlshortener.core.Redirection
-import es.unizar.urlshortener.core.ShortUrl
-import es.unizar.urlshortener.core.ShortUrlProperties
-import es.unizar.urlshortener.core.usecases.CreateShortUrlUseCase
-import es.unizar.urlshortener.core.usecases.LogClickUseCase
-import es.unizar.urlshortener.core.usecases.QRUseCase
-import es.unizar.urlshortener.core.usecases.RedirectUseCase
+import es.unizar.urlshortener.core.*
+import es.unizar.urlshortener.core.usecases.*
+import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -32,50 +27,21 @@ interface QRController {
      */
     fun redirectTo(@PathVariable id: String, request: HttpServletRequest): ResponseEntity<ByteArray>
 
-    /**
-     * Creates a qr from url from details provided in [data].
-     *
-     * **Note**: Delivery of use case [CreateShortUrlUseCase].
-     */
-    fun qrGenerator(data: ShortUrlDataIn, request: HttpServletRequest): ResponseEntity<QRURIOut>
-}
-
-/**
- * Data returned after the creation of a qr from url.
- */
-data class QRDataOut(
-    val qr: BufferedImage,
-)
-
-/**
- *
- */
-data class QRURIOut(
-    val url:URI? = null,
-    val properties: Map<String, Any> = emptyMap()
-)
-
 @RestController
 class QRControllerImpl(
     val qrUseCase: QRUseCase,
+    val qrRedirectUseCase: QRRedirectUseCase
 ): QRController {
     @GetMapping("/qr/{id:.*}", produces = [MediaType.IMAGE_PNG_VALUE])
     override fun redirectTo(
         @PathVariable id: String,
         request: HttpServletRequest
-    ): ResponseEntity<ByteArray> {
-        //TODO:
+    ): ResponseEntity<ByteArray> = qrRedirectUseCase.redirectTo(id).let {
         val h = HttpHeaders()
-        val response = qrUseCase.create(ShortUrl(hash = id, redirection = Redirection(target = "https://google.com")))
+        val response =
+            qrUseCase.createQR(ShortUrl(hash = id, redirection = Redirection(target = it.target)))
         return ResponseEntity(response, h, HttpStatus.CREATED)
     }
-
-    @PostMapping("/qr", consumes = [MediaType.APPLICATION_JSON_VALUE])
-    override fun qrGenerator(
-        data: ShortUrlDataIn,
-        request: HttpServletRequest
-    ): ResponseEntity<QRURIOut> {
-        TODO("Not yet implemented")
-    }
+}
 }
 
