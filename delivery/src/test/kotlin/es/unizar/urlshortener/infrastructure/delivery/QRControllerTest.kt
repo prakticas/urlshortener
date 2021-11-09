@@ -21,39 +21,39 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 
 @WebMvcTest
 @ContextConfiguration(classes = [
-    UrlShortenerControllerImpl::class,
+//    UrlShortenerControllerImpl::class,
     RestResponseEntityExceptionHandler::class])
 class QRControllerTest {
 
-    @Autowired
-    private lateinit var mockMvc: MockMvc
-
-    @MockBean
-    private lateinit var redirectUseCase: RedirectUseCase
-
-    @MockBean
-    private lateinit var logClickUseCase: LogClickUseCase
-
-    //@MockBean
-    //private lateinit var createQRUseCase: CreateQRUseCase
-
-    @Test
-    fun `redirectTo returns a redirect when the key exists`() {
-        //TODO: unimplemented method
-    }
-
-    @Test
-    fun `redirectTo returns a not found when the key does not exist`() {
-        //TODO: unimplemented method
-    }
-
-    @Test
-    fun `creates returns a basic redirect if it can compute a hash`() {
-        //TODO: unimplemented method
-    }
-
-    @Test
-    fun `creates returns bad request if it can compute a hash`() {
-        //TODO: unimplemented method
-    }
+//    @Autowired
+//    private lateinit var mockMvc: MockMvc
+//
+//    @MockBean
+//    private lateinit var redirectUseCase: RedirectUseCase
+//
+//    @MockBean
+//    private lateinit var logClickUseCase: LogClickUseCase
+//
+//    //@MockBean
+//    //private lateinit var createQRUseCase: CreateQRUseCase
+//
+//    @Test
+//    fun `redirectTo returns a redirect when the key exists`() {
+//        //TODO: unimplemented method
+//    }
+//
+//    @Test
+//    fun `redirectTo returns a not found when the key does not exist`() {
+//        //TODO: unimplemented method
+//    }
+//
+//    @Test
+//    fun `creates returns a basic redirect if it can compute a hash`() {
+//        //TODO: unimplemented method
+//    }
+//
+//    @Test
+//    fun `creates returns bad request if it can compute a hash`() {
+//        //TODO: unimplemented method
+//    }
 }

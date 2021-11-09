@@ -26,37 +26,32 @@ class QRIntegrationTests {
 
     @BeforeEach
     fun setup() {
-        val httpClient = HttpClientBuilder.create()
-            .disableRedirectHandling()
-            .build()
-        (restTemplate.restTemplate.requestFactory as HttpComponentsClientHttpRequestFactory).httpClient = httpClient
 
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "shorturl", "click")
     }
 
     @AfterEach
     fun tearDowns() {
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "shorturl", "click")
+
     }
 
     @Test
     fun `redirectTo should return a redirect when url hash exists in creating qr`(){
-        //TODO: unimplemented function
+
     }
 
     @Test
     fun `redirectTo should return a not found when url hash doesn't exist`(){
-        //TODO: unimplemented function
+
     }
 
     @Test
     fun `redirectTo should return an internal server error when other error occurred`(){
-        //TODO: unimplemented function
+
     }
 
     @Test
     fun `should return an internal server error when encoding a url in a qr fails`(){
-        //TODO: unimplemented function
+
     }
 
 
