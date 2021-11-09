@@ -1,5 +1,6 @@
 package es.unizar.urlshortener.core
 
+import org.springframework.core.io.InputStreamResource
 import java.time.OffsetDateTime
 import java.util.*
 
@@ -20,6 +21,11 @@ data class ShortUrl(
     val redirection: Redirection,
     val created: OffsetDateTime = OffsetDateTime.now(),
     val properties: ShortUrlProperties = ShortUrlProperties()
+)
+
+data class CsvProfile(
+    val firstUri: String,
+    val file: InputStreamResource
 )
 
 /**
