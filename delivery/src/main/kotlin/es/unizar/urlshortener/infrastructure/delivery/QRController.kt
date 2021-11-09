@@ -1,6 +1,9 @@
 package es.unizar.urlshortener.infrastructure.delivery
 
 import es.unizar.urlshortener.core.QRProperties
+import es.unizar.urlshortener.core.Redirection
+import es.unizar.urlshortener.core.ShortUrl
+import es.unizar.urlshortener.core.ShortUrlProperties
 import es.unizar.urlshortener.core.usecases.CreateShortUrlUseCase
 import es.unizar.urlshortener.core.usecases.LogClickUseCase
 import es.unizar.urlshortener.core.usecases.QRUseCase
@@ -27,7 +30,7 @@ interface QRController {
      *
      * **Note**: Delivery of use cases [RedirectUseCase] and [LogClickUseCase].
      */
-    fun redirectTo(request: HttpServletRequest): ByteArray
+    fun redirectTo(request: HttpServletRequest): ResponseEntity<ByteArray>
 
     /**
      * Creates a qr from url from details provided in [data].
@@ -66,10 +69,11 @@ class QRControllerImpl(
     @GetMapping("/qr", produces = [MediaType.IMAGE_PNG_VALUE])
     override fun redirectTo(
         request: HttpServletRequest
-    ): ByteArray {
+    ): ResponseEntity<ByteArray> {
         //TODO:
-
-        return qrUseCase.create("wfefee")
+        val h = HttpHeaders()
+        val response = qrUseCase.create(ShortUrl(hash = "kldwfhsuikdf", redirection = Redirection(target = "https://google.com")))
+        return ResponseEntity(response, h, HttpStatus.CREATED)
     }
 
     @PostMapping("/qr", consumes = [MediaType.APPLICATION_JSON_VALUE])

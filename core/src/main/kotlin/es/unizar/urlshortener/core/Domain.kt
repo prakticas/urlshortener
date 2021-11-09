@@ -30,9 +30,9 @@ data class ShortUrl(
  */
 data class QRFromUrl(
     val url: ShortUrl,
-    val qr: BufferedImage,
-    val properties: QRProperties,
-    val created: OffsetDateTime
+    val qr: ByteArray,
+    val properties: QRProperties = QRProperties(),
+    val created: OffsetDateTime = OffsetDateTime.now()
 )
 
 /**

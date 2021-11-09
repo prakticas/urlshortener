@@ -2,6 +2,7 @@ package es.unizar.urlshortener
 
 import es.unizar.urlshortener.core.usecases.*
 import es.unizar.urlshortener.infrastructure.delivery.HashServiceImpl
+import es.unizar.urlshortener.infrastructure.delivery.QRServiceImpl
 import es.unizar.urlshortener.infrastructure.delivery.ValidatorServiceImpl
 import es.unizar.urlshortener.infrastructure.repositories.ClickEntityRepository
 import es.unizar.urlshortener.infrastructure.repositories.ClickRepositoryServiceImpl
@@ -34,6 +35,9 @@ class ApplicationConfiguration(
     fun hashService() = HashServiceImpl()
 
     @Bean
+    fun qrService() = QRServiceImpl()
+
+    @Bean
     fun redirectUseCase() = RedirectUseCaseImpl(shortUrlRepositoryService())
 
     @Bean
@@ -43,5 +47,5 @@ class ApplicationConfiguration(
     fun createShortUrlUseCase() = CreateShortUrlUseCaseImpl(shortUrlRepositoryService(), validatorService(), hashService())
 
     @Bean
-    fun createQRUseCase() = QRUseCaseImpl()
+    fun createQRUseCase() = QRUseCaseImpl(qrService(), validatorService())
 }
