@@ -64,3 +64,14 @@ fun ShortUrl.toEntity() = ShortUrlEntity(
     country = properties.country
 )
 
+fun QREntity.toDomain() = QRFromUrl(
+    url = url.toDomain(),
+    qr = qr,
+)
+
+fun QRFromUrl.toEntity() = QREntity(
+    url = url.toEntity(),
+    hash = url.hash,
+    qr = qr
+)
+

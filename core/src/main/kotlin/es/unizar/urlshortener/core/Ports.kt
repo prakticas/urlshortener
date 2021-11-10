@@ -19,6 +19,16 @@ interface ShortUrlRepositoryService {
 }
 
 /**
+ *
+ * **Note** it could be refactor
+ */
+
+interface QRRepositoryService {
+    fun findByKey(id: String): QRFromUrl?
+    fun save(su: QRFromUrl): QRFromUrl
+}
+
+/**
  * [ValidatorService] is the port to the service that validates if an url can be shortened.
  *
  * **Note**: It is a design decision to create this port. It could be part of the core .
@@ -40,8 +50,9 @@ interface HashService {
  * [QRService] is the port to the service that creates a QR from a URL.
  */
 interface QRService {
-    fun createQR(url: String): QRFromUrl
-    fun encodeQR(url: String): BitMatrix
+    fun createQR(url: ShortUrl, data: QRProperties = QRProperties()): QRFromUrl
+    fun encodeQR(url:String, width: Int, height: Int): BitMatrix
     @TestOnly
-    fun decodeQR(qr: QRFromUrl): String
+    fun decodeQR(qrBitMatrix: BitMatrix): String
+    fun QRToByteArray(bitMatrix: BitMatrix): ByteArray
 }

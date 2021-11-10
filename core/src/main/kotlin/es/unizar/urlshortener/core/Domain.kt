@@ -2,6 +2,7 @@ package es.unizar.urlshortener.core
 
 
 import com.google.zxing.common.BitMatrix
+import java.awt.image.BufferedImage
 import java.time.OffsetDateTime
 import java.util.*
 
@@ -29,8 +30,9 @@ data class ShortUrl(
  */
 data class QRFromUrl(
     val url: ShortUrl,
-    val qr: BitMatrix,
-    val properties: QRProperties
+    val qr: ByteArray,
+    val properties: QRProperties = QRProperties(),
+    val created: OffsetDateTime = OffsetDateTime.now()
 )
 
 /**

@@ -1,12 +1,7 @@
 package es.unizar.urlshortener.infrastructure.delivery
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import es.unizar.urlshortener.core.ClickProperties
-import es.unizar.urlshortener.core.ShortUrl
-import es.unizar.urlshortener.core.ShortUrlProperties
-import es.unizar.urlshortener.core.usecases.LogClickUseCase
-import es.unizar.urlshortener.core.usecases.CreateShortUrlUseCase
-import es.unizar.urlshortener.core.usecases.RedirectUseCase
+import es.unizar.urlshortener.core.*
+import es.unizar.urlshortener.core.usecases.*
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -43,7 +38,8 @@ interface UrlShortenerController {
  */
 data class ShortUrlDataIn(
     val url: String,
-    val sponsor: String? = null
+    val sponsor: String? = null,
+    val withQR: Boolean?
 )
 
 /**
@@ -51,7 +47,7 @@ data class ShortUrlDataIn(
  */
 data class ShortUrlDataOut(
     val url: URI? = null,
-    val properties: Map<String, Any> = emptyMap()
+    val properties: Map<String, Any> = emptyMap(),
 )
 
 
@@ -64,7 +60,7 @@ data class ShortUrlDataOut(
 class UrlShortenerControllerImpl(
     val redirectUseCase: RedirectUseCase,
     val logClickUseCase: LogClickUseCase,
-    val createShortUrlUseCase: CreateShortUrlUseCase
+    val createShortUrlUseCase: CreateShortUrlUseCase,
 ) : UrlShortenerController {
 
     @GetMapping("/tiny-{id:.*}")
@@ -72,8 +68,8 @@ class UrlShortenerControllerImpl(
         redirectUseCase.redirectTo(id).let {
             logClickUseCase.logClick(id, ClickProperties(ip = request.remoteAddr))
             val h = HttpHeaders()
-            h.location = URI.create(it.target)
-            ResponseEntity<Void>(h, HttpStatus.valueOf(it.mode))
+            h.location = URI.create(it.redirection.target)
+            ResponseEntity<Void>(h, HttpStatus.valueOf(it.redirection.mode))
         }
 
     @PostMapping("/api/link", consumes = [ MediaType.APPLICATION_FORM_URLENCODED_VALUE ])
@@ -88,8 +84,11 @@ class UrlShortenerControllerImpl(
             //lo devuelvo por create es usado por la word 'it'
         ).let {
             val h = HttpHeaders()
-            //obetner la uri comrpimida de la uri inicial
-            val url = linkTo<UrlShortenerControllerImpl> { redirectTo(it.hash, request) }.toUri()
+            val url: URI = if (data.withQR == true){
+                linkTo<QRControllerImpl> { redirectTo( it.hash, request) }.toUri()
+            } else {
+                linkTo<UrlShortenerControllerImpl> { redirectTo(it.hash, request) }.toUri()
+            }
             h.location = url
             val response = ShortUrlDataOut(
                 url = url,

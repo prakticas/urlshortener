@@ -39,3 +39,15 @@ class ShortUrlEntity(
     val ip: String?,
     val country: String?
 )
+
+@Entity
+@Table(name = "QR")
+class QREntity(
+    @Id
+    val hash: String,
+    @OneToOne(cascade = [CascadeType.ALL])
+    @JoinColumn(name = "url_id", referencedColumnName = "hash")
+    val url: ShortUrlEntity,
+    @Lob
+    val qr: ByteArray
+)
