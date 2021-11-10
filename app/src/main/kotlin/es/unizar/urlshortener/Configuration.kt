@@ -8,12 +8,15 @@ import es.unizar.urlshortener.infrastructure.repositories.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.scheduling.annotation.Async
+import org.springframework.scheduling.annotation.EnableAsync
 
 /**
  * Wires use cases with service implementations, and services implementations with repositories.
  *
  * **Note**: Spring Boot is able to discover this [Configuration] without further configuration.
  */
+@EnableAsync
 @Configuration
 class ApplicationConfiguration(
     @Autowired val shortUrlEntityRepository: ShortUrlEntityRepository,
@@ -40,9 +43,6 @@ class ApplicationConfiguration(
 
     @Bean
     fun redirectUseCase() = RedirectUseCaseImpl(shortUrlRepositoryService())
-
-    @Bean
-    fun qrRedirectUseCase() = QRRedirectUseCaseImpl(qrRepositoryService())
 
     @Bean
     fun logClickUseCase() = LogClickUseCaseImpl(clickRepositoryService())

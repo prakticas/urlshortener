@@ -48,4 +48,6 @@ class QREntity(
     @OneToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name = "url_id", referencedColumnName = "hash")
     val url: ShortUrlEntity,
+    @Lob
+    val qr: ByteArray
 )

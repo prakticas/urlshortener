@@ -1,14 +1,7 @@
 package es.unizar.urlshortener.infrastructure.delivery
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import es.unizar.urlshortener.core.ClickProperties
-import es.unizar.urlshortener.core.QRFromUrl
-import es.unizar.urlshortener.core.ShortUrl
-import es.unizar.urlshortener.core.ShortUrlProperties
-import es.unizar.urlshortener.core.usecases.LogClickUseCase
-import es.unizar.urlshortener.core.usecases.CreateShortUrlUseCase
-import es.unizar.urlshortener.core.usecases.QRUseCase
-import es.unizar.urlshortener.core.usecases.RedirectUseCase
+import es.unizar.urlshortener.core.*
+import es.unizar.urlshortener.core.usecases.*
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -67,7 +60,6 @@ class UrlShortenerControllerImpl(
     val redirectUseCase: RedirectUseCase,
     val logClickUseCase: LogClickUseCase,
     val createShortUrlUseCase: CreateShortUrlUseCase,
-    val qrUseCase: QRUseCase
 ) : UrlShortenerController {
 
     @GetMapping("/tiny-{id:.*}")
@@ -75,8 +67,8 @@ class UrlShortenerControllerImpl(
         redirectUseCase.redirectTo(id).let {
             logClickUseCase.logClick(id, ClickProperties(ip = request.remoteAddr))
             val h = HttpHeaders()
-            h.location = URI.create(it.target)
-            ResponseEntity<Void>(h, HttpStatus.valueOf(it.mode))
+            h.location = URI.create(it.redirection.target)
+            ResponseEntity<Void>(h, HttpStatus.valueOf(it.redirection.mode))
         }
 
     @PostMapping("/api/link", consumes = [ MediaType.APPLICATION_FORM_URLENCODED_VALUE ])
@@ -89,12 +81,10 @@ class UrlShortenerControllerImpl(
             )
         ).let {
             val h = HttpHeaders()
-            val url: URI
-            if (data.withQR == true){
-                url = linkTo<QRController.QRControllerImpl> { redirectTo(it.hash, request) }.toUri()
-                qrUseCase.create(url = QRFromUrl(url = it, qr = ByteArray(2)))
+            val url: URI = if (data.withQR == true){
+                linkTo<QRControllerImpl> { redirectTo( it.hash, request) }.toUri()
             } else {
-                url = linkTo<UrlShortenerControllerImpl> { redirectTo(it.hash, request) }.toUri()
+                linkTo<UrlShortenerControllerImpl> { redirectTo(it.hash, request) }.toUri()
             }
             h.location = url
             val response = ShortUrlDataOut(

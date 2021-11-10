@@ -8,6 +8,7 @@ import com.google.zxing.qrcode.QRCodeWriter
 import com.google.zxing.qrcode.decoder.Decoder
 import es.unizar.urlshortener.core.*
 import org.apache.commons.validator.routines.UrlValidator
+import org.springframework.scheduling.annotation.Async
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
 
@@ -37,7 +38,7 @@ class QRServiceImpl: QRService {
             url = url,
             qr = qrByteArray,
             properties = data
-        );
+        )
     }
 
     override fun encodeQR(url: String, width: Int, height: Int): BitMatrix {
@@ -52,12 +53,12 @@ class QRServiceImpl: QRService {
 
     override fun decodeQR(qrBitMatrix: BitMatrix): String {
             val decoder = Decoder()
-            return decoder.decode(qrBitMatrix).text;
+            return decoder.decode(qrBitMatrix).text
     }
 
     override fun QRToByteArray(bitMatrix: BitMatrix): ByteArray{
         val qrByteArray = ByteArrayOutputStream()
-        MatrixToImageWriter.writeToStream(bitMatrix, "png", qrByteArray);
+        MatrixToImageWriter.writeToStream(bitMatrix, "png", qrByteArray)
         return qrByteArray.toByteArray()
     }
 

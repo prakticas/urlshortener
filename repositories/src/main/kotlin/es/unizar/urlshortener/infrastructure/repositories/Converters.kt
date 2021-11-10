@@ -66,11 +66,12 @@ fun ShortUrl.toEntity() = ShortUrlEntity(
 
 fun QREntity.toDomain() = QRFromUrl(
     url = url.toDomain(),
-    qr = ByteArray(2),
+    qr = qr,
 )
 
 fun QRFromUrl.toEntity() = QREntity(
     url = url.toEntity(),
-    hash = url.hash
+    hash = url.hash,
+    qr = qr
 )
 

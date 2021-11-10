@@ -8,6 +8,8 @@ import es.unizar.urlshortener.core.*
 import es.unizar.urlshortener.core.usecases.QRUseCaseImpl
 import es.unizar.urlshortener.infrastructure.delivery.QRServiceImpl
 import es.unizar.urlshortener.infrastructure.delivery.ValidatorServiceImpl
+import es.unizar.urlshortener.infrastructure.repositories.QREntityRepository
+import es.unizar.urlshortener.infrastructure.repositories.QRRepositoryServiceImpl
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -31,10 +33,7 @@ class QRUnitTests {
 
     @Autowired
     private val qrService = QRServiceImpl()
-    @Autowired
-    private val validatorService = ValidatorServiceImpl()
-    @Autowired
-    private val qrUseCaseImpl = QRUseCaseImpl(qrService, validatorService)
+
     @Mock
     private val qrCodeWriter = QRCodeWriter()
 
@@ -50,22 +49,6 @@ class QRUnitTests {
         // Then
 //        val urlEnd = qrService.decodeQR(encodedQR)
 //        assertThat(urlInit).isEqualTo(urlEnd)
-    }
-
-    @Test
-    fun `should not encode QR code correctly if is not a valid url`() {
-        // Given
-        val urlInit = "https://googleddfcom"
-        val width = 300
-        val height = 300
-        val shortUrl = ShortUrl(
-            hash = "asklfjs",
-            redirection = Redirection(target = urlInit)
-        )
-        // Then
-        assertThrows<InvalidUrlException> {
-            qrUseCaseImpl.create(shortUrl)
-        }
     }
 
     @Test
