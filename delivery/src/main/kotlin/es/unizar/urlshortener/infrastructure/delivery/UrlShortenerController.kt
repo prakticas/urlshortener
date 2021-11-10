@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 import java.net.URI
 import javax.servlet.http.HttpServletRequest
 
@@ -73,12 +74,14 @@ class UrlShortenerControllerImpl(
 
     @PostMapping("/api/link", consumes = [ MediaType.APPLICATION_FORM_URLENCODED_VALUE ])
     override fun shortener(data: ShortUrlDataIn, request: HttpServletRequest): ResponseEntity<ShortUrlDataOut> =
+        //guardar la ip en la base de datos
         createShortUrlUseCase.create(
             url = data.url,
             data = ShortUrlProperties(
                 ip = request.remoteAddr,
                 sponsor = data.sponsor
             )
+            //lo devuelvo por create es usado por la word 'it'
         ).let {
             val h = HttpHeaders()
             val url: URI = if (data.withQR == true){
@@ -95,4 +98,35 @@ class UrlShortenerControllerImpl(
             )
             ResponseEntity<ShortUrlDataOut>(response, h, HttpStatus.CREATED)
         }
-}
+
+    @PostMapping("/api/upload")
+    fun handleFileUpload(@RequestParam("file") file: MultipartFile,request: HttpServletRequest): ResponseEntity<ShortUrlDataOut> {
+
+        val urlFile = "http://example.com/"
+        val sponsor = "sp"
+        //guardar la ip en la base de datos
+        val shortUrl = createShortUrlUseCase.create(
+            url = urlFile,
+            data = ShortUrlProperties(
+                ip = request.remoteAddr,
+                sponsor = sponsor
+            ))
+
+            val h = HttpHeaders()
+            //obetner la uri comrpimida de la uri inicial
+            val url = linkTo<UrlShortenerControllerImpl> { redirectTo(shortUrl.hash, request) }.toUri()
+            h.location = url
+            val response = ShortUrlDataOut(
+                url = url,
+                properties = mapOf(
+                    "safe" to shortUrl.properties.safe
+                )
+            )
+            return ResponseEntity<ShortUrlDataOut>(response, h, HttpStatus.CREATED)
+
+        }
+
+    }
+
+
+
