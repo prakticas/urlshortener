@@ -2,6 +2,7 @@ package es.unizar.urlshortener.infrastructure.delivery
 
 import es.unizar.urlshortener.core.*
 import es.unizar.urlshortener.core.usecases.*
+import org.springframework.core.io.InputStreamResource
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -61,6 +62,7 @@ class UrlShortenerControllerImpl(
     val redirectUseCase: RedirectUseCase,
     val logClickUseCase: LogClickUseCase,
     val createShortUrlUseCase: CreateShortUrlUseCase,
+    val createShortUrlFromCsvUseCase:CreateShortUrlFromCsvUseCase
 ) : UrlShortenerController {
 
     @GetMapping("/tiny-{id:.*}")
@@ -100,11 +102,11 @@ class UrlShortenerControllerImpl(
         }
 
     @PostMapping("/api/upload")
-    fun handleFileUpload(@RequestParam("file") file: MultipartFile,request: HttpServletRequest): ResponseEntity<Resource> {
+    fun handleFileUpload(@RequestParam("file") file: MultipartFile,request: HttpServletRequest): ResponseEntity<InputStreamResource> {
 
 
         //guardar la ip en la base de datos
-        val csvProfile = CreateShortUrlFromCsvUseCase.create(
+        val csvProfile = createShortUrlFromCsvUseCase.create(
             file = file,
             data = ShortUrlProperties(
                 ip = request.remoteAddr,

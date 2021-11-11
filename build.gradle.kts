@@ -44,8 +44,9 @@ subprojects {
 project(":core") {
 
     dependencies{
-
+        "implementation"("org.springframework:spring-core:5.3.10")
         "implementation" ("org.apache.commons:commons-csv:1.5")
+        "implementation" ("org.springframework:spring-web:5.3.10")
     }
 }
 

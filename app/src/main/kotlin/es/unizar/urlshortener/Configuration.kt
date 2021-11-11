@@ -51,5 +51,8 @@ class ApplicationConfiguration(
     fun createShortUrlUseCase() = CreateShortUrlUseCaseImpl(shortUrlRepositoryService(), validatorService(), hashService())
 
     @Bean
+    fun createShortUrlFromCsvUseCase() = CreateShortUrlFromCsvUseCaseImpl(shortUrlRepositoryService(), validatorService(), hashService())
+
+    @Bean
     fun createQRUseCase() = QRUseCaseImpl(qrRepositoryService(), qrService(), validatorService())
 }
