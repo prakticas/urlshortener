@@ -98,8 +98,10 @@ class UrlShortenerControllerImpl(
             var qr: URI? = null
             if (data.withQR == true) {
                 qr = linkTo<QRControllerImpl> { redirectTo(it.hash, request) }.toUri()
+                url = linkTo<QRControllerImpl> { redirectTo(it.hash, request) }.toUri()
+            } else {
+                url = linkTo<UrlShortenerControllerImpl> { redirectTo(it.hash, request) }.toUri()
             }
-            url = linkTo<UrlShortenerControllerImpl> { redirectTo(it.hash, request) }.toUri()
             h.location = url
             val response = ShortUrlDataOut(
                 url = url,
