@@ -41,7 +41,13 @@ subprojects {
     }
 }
 
-project(":core") { }
+project(":core") {
+
+    dependencies{
+
+        "implementation" ("org.apache.commons:commons-csv:1.5")
+    }
+}
 
 project(":repositories") {
     apply(plugin = "org.springframework.boot")

@@ -100,31 +100,32 @@ class UrlShortenerControllerImpl(
         }
 
     @PostMapping("/api/upload")
-    fun handleFileUpload(@RequestParam("file") file: MultipartFile,request: HttpServletRequest): ResponseEntity<ShortUrlDataOut> {
+    fun handleFileUpload(@RequestParam("file") file: MultipartFile,request: HttpServletRequest): ResponseEntity<Resource> {
 
-        val urlFile = "http://example.com/"
-        val sponsor = "sp"
+
         //guardar la ip en la base de datos
-        val shortUrl = createShortUrlUseCase.create(
-            url = urlFile,
+        val csvProfile = CreateShortUrlFromCsvUseCase.create(
+            file = file,
             data = ShortUrlProperties(
                 ip = request.remoteAddr,
-                sponsor = sponsor
+                sponsor = null
             ))
 
-            val h = HttpHeaders()
-            //obetner la uri comrpimida de la uri inicial
-            val url = linkTo<UrlShortenerControllerImpl> { redirectTo(shortUrl.hash, request) }.toUri()
-            h.location = url
-            val response = ShortUrlDataOut(
-                url = url,
-                properties = mapOf(
-                    "safe" to shortUrl.properties.safe
-                )
-            )
-            return ResponseEntity<ShortUrlDataOut>(response, h, HttpStatus.CREATED)
+        val h = HttpHeaders()
+        //obetner la uri comrpimida de la uri inicial
+        val url = linkTo<UrlShortenerControllerImpl> { redirectTo(csvProfile.firstUri, request) }.toUri()
+        h.location = url
+        h.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=uriFile.csv")
+        h.set(HttpHeaders.CONTENT_TYPE, "text/csv")
+        return ResponseEntity(
+            csvProfile.file,
+            h,
+            HttpStatus.CREATED
+        )
 
-        }
+
+
+    }
 
     }
 

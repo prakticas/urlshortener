@@ -1,10 +1,13 @@
 package es.unizar.urlshortener.core
 
 
+
+
 import com.google.zxing.common.BitMatrix
 import java.awt.image.BufferedImage
 import java.time.OffsetDateTime
 import java.util.*
+import org.springframework.core.io.InputStreamResource
 
 /**
  * A [Click] captures a request of redirection of a [ShortUrl] identified by its [hash].
@@ -23,6 +26,11 @@ data class ShortUrl(
     val redirection: Redirection,
     val created: OffsetDateTime = OffsetDateTime.now(),
     val properties: ShortUrlProperties = ShortUrlProperties(),
+)
+
+data class CsvProfile(
+    val firstUri: String,
+    val file: InputStreamResource
 )
 
 /**
