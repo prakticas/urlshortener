@@ -65,7 +65,7 @@ class MasiveUrlShortenerControllerImpl(
             }
 
             //Escribo la respuesta
-            writer.write(uri+","+qrUri+"\n")
+            writer.write(url+","+uri+","+qrUri+"\n")
 
             if (firstUri == ""){
                 firstUri= shortUrl.hash
