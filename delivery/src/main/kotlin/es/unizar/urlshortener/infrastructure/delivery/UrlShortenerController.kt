@@ -7,11 +7,17 @@ import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.http.MediaType.parseMediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
+import java.io.ByteArrayInputStream
 import java.net.URI
 import javax.servlet.http.HttpServletRequest
+import org.apache.commons.csv.CSVFormat
+import org.apache.commons.csv.CSVParser
+import java.io.StringWriter
+
 
 /**
  * The specification of the controller.
@@ -62,7 +68,6 @@ class UrlShortenerControllerImpl(
     val redirectUseCase: RedirectUseCase,
     val logClickUseCase: LogClickUseCase,
     val createShortUrlUseCase: CreateShortUrlUseCase,
-    val createShortUrlFromCsvUseCase:CreateShortUrlFromCsvUseCase
 ) : UrlShortenerController {
 
     @GetMapping("/tiny-{id:.*}")
@@ -74,7 +79,7 @@ class UrlShortenerControllerImpl(
             ResponseEntity<Void>(h, HttpStatus.valueOf(it.redirection.mode))
         }
 
-    @PostMapping("/api/link", consumes = [ MediaType.APPLICATION_FORM_URLENCODED_VALUE ])
+    @PostMapping("/api/link", consumes = [MediaType.APPLICATION_FORM_URLENCODED_VALUE])
     override fun shortener(data: ShortUrlDataIn, request: HttpServletRequest): ResponseEntity<ShortUrlDataOut> =
         //guardar la ip en la base de datos
         createShortUrlUseCase.create(
@@ -86,8 +91,8 @@ class UrlShortenerControllerImpl(
             //lo devuelvo por create es usado por la word 'it'
         ).let {
             val h = HttpHeaders()
-            val url: URI = if (data.withQR == true){
-                linkTo<QRControllerImpl> { redirectTo( it.hash, request) }.toUri()
+            val url: URI = if (data.withQR == true) {
+                linkTo<QRControllerImpl> { redirectTo(it.hash, request) }.toUri()
             } else {
                 linkTo<UrlShortenerControllerImpl> { redirectTo(it.hash, request) }.toUri()
             }
@@ -100,36 +105,9 @@ class UrlShortenerControllerImpl(
             )
             ResponseEntity<ShortUrlDataOut>(response, h, HttpStatus.CREATED)
         }
-
-    @PostMapping("/api/upload")
-    fun handleFileUpload(@RequestParam("file") file: MultipartFile,request: HttpServletRequest): ResponseEntity<InputStreamResource> {
+}
 
 
-        //guardar la ip en la base de datos
-        val csvProfile = createShortUrlFromCsvUseCase.create(
-            file = file,
-            data = ShortUrlProperties(
-                ip = request.remoteAddr,
-                sponsor = null
-            ))
-
-        val h = HttpHeaders()
-        //obetner la uri comrpimida de la uri inicial
-        val url = linkTo<UrlShortenerControllerImpl> { redirectTo(csvProfile.firstUri, request) }.toUri()
-        h.location = url
-        h.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=uriFile.csv")
-        h.set(HttpHeaders.CONTENT_TYPE, "text/csv")
-        return ResponseEntity(
-            csvProfile.file,
-            h,
-            HttpStatus.CREATED
-        )
-
-
-
-    }
-
-    }
 
 
 
