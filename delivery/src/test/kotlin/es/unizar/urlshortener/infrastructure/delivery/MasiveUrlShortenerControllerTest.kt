@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 
@@ -53,12 +54,14 @@ class MasiveUrlShortenerControllerTest {
             )
         ).willReturn(ShortUrl("f684a3c4", Redirection("http://example.com/")))
         val file = MockMultipartFile("file", "hello.txt", MediaType.TEXT_PLAIN_VALUE, "http://example.com/,y".toByteArray())
+        val response = "http://example.com/,http://localhost/tiny-f684a3c4,QR\n"
         mockMvc.perform(
             multipart("/api/upload")
                 .file(file))
             .andDo(print())
             .andExpect(status().isCreated)
-        //.andExpect(archivo de vuelta xddd)
+            .andExpect(content().bytes(response.toByteArray()))
+
 
 
     }
