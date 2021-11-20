@@ -57,6 +57,7 @@ class MasiveUrlShortenerControllerImpl(
                 data = data
 
             )
+            var uri = linkTo<UrlShortenerControllerImpl> { redirectTo(shortUrl.hash, request) }.toUri().toString()
             // calculo la URI del QR si fuera necesario
             var qrUri =""
             if(qr=="y"){
@@ -64,7 +65,7 @@ class MasiveUrlShortenerControllerImpl(
             }
 
             //Escribo la respuesta
-            writer.write(shortUrl.hash+","+qrUri+"\n")
+            writer.write(uri+","+qrUri+"\n")
 
             if (firstUri == ""){
                 firstUri= shortUrl.hash
