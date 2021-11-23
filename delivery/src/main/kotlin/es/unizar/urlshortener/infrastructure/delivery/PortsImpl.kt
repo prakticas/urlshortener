@@ -16,11 +16,24 @@ import java.nio.charset.StandardCharsets
  * Implementation of the port [ValidatorService].
  */
 class ValidatorServiceImpl : ValidatorService {
-    override fun isValid(url: String) = urlValidator.isValid(url)
-
     companion object {
         val urlValidator = UrlValidator(arrayOf("http", "https"))
     }
+    override fun isValid(url: String) : UrlError{
+        //checks the format
+        urlValidator.isValid(url)
+        //checks availability
+
+        //checks if it is safe
+
+
+
+        //no errors found
+        return UrlError.NO_ERROR
+    }
+
+
+
 }
 
 /**
