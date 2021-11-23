@@ -21,7 +21,9 @@ class ValidatorServiceImpl : ValidatorService {
     }
     override fun isValid(url: String) : UrlError{
         //checks the format
-        urlValidator.isValid(url)
+        if(!urlValidator.isValid(url))
+            return UrlError.INCORRECT_URL
+
         //checks availability
 
         //checks if it is safe
