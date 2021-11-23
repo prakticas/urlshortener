@@ -44,12 +44,14 @@ class QRIntegrationTests {
             .build()
         (restTemplate.restTemplate.requestFactory as HttpComponentsClientHttpRequestFactory).httpClient = httpClient
 
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "QR", "shorturl", "click")
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "QR", "click")
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "shorturl", "click")
     }
 
     @AfterEach
     fun tearDowns() {
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "QR", "shorturl", "click")
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "QR", "click")
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "shorturl", "click")
     }
 
     @Test
@@ -66,6 +68,7 @@ class QRIntegrationTests {
         assertThat(response.body).isEqualTo(qrServiceImpl.QRToByteArray(qrServiceImpl.encodeQR("https://google.com", 200, 200)))
         assertThat(JdbcTestUtils.countRowsInTable(jdbcTemplate, "click")).isEqualTo(1)
         assertThat(JdbcTestUtils.countRowsInTable(jdbcTemplate, "QR")).isEqualTo(1)
+        assertThat(JdbcTestUtils.countRowsInTable(jdbcTemplate, "shorturl")).isEqualTo(1)
     }
 
     @Test
