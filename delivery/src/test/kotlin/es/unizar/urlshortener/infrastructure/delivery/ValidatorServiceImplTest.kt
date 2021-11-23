@@ -19,19 +19,27 @@ internal class ValidatorServiceImplTest{
     @Test
     @Disabled
     fun `Url is not  available`(){
-    assertEquals(1,1)
+        val expected = UrlError.NOT_AVAILABLE
+        val actual = testValidatorServiceImpl.isValid("ftp://example.com/")
+        assertEquals(expected,actual)
+
     }
 
 
     @Test
     @Disabled
     fun `Url is not secure`(){
+        val expected = UrlError.NOT_SECURE
+        val actual = testValidatorServiceImpl.isValid("ftp://example.com/")
+        assertEquals(expected,actual)
 
     }
 
     @Test
-    @Disabled
     fun `Url has the correct format and is either available and secure`(){
+        val expected = UrlError.NO_ERROR
+        val actual = testValidatorServiceImpl.isValid("https://www.google.com/")
+        assertEquals(expected,actual)
 
     }
 
