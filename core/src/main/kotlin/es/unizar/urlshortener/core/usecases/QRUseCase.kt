@@ -18,7 +18,7 @@ class QRUseCaseImpl(private val qrRepositoryService: QRRepositoryService,
 
     private fun createQR(url: ShortUrl, data: QRProperties = QRProperties()): ByteArray {
         val urlName = url.redirection.target
-        if(!validatorService.isValid(urlName)) throw InvalidUrlException(urlName)
+        if(UrlError.NO_ERROR!=validatorService.isValid(urlName)) throw InvalidUrlException(urlName)
         return qrService.createQR(url, data).qr
     }
 

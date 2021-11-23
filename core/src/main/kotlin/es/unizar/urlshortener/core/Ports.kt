@@ -34,7 +34,7 @@ interface QRRepositoryService {
  * **Note**: It is a design decision to create this port. It could be part of the core .
  */
 interface ValidatorService {
-    fun isValid(url: String): Boolean
+    fun isValid(url: String): UrlError
 }
 
 /**
