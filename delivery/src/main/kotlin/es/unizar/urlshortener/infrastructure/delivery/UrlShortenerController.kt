@@ -94,13 +94,10 @@ class UrlShortenerControllerImpl(
             //lo devuelvo por create es usado por la word 'it'
         ).let {
             val h = HttpHeaders()
-            val url: URI?
+            val url = linkTo<UrlShortenerControllerImpl> { redirectTo(it.hash, request) }.toUri()
             var qr: URI? = null
             if (data.withQR == true) {
                 qr = linkTo<QRControllerImpl> { redirectTo(it.hash, request) }.toUri()
-                url = linkTo<QRControllerImpl> { redirectTo(it.hash, request) }.toUri()
-            } else {
-                url = linkTo<UrlShortenerControllerImpl> { redirectTo(it.hash, request) }.toUri()
             }
             h.location = url
             val response = ShortUrlDataOut(
