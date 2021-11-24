@@ -1,23 +1,32 @@
 $(document).ready(
     function() {
-
         $("#shortener").submit(
             function(event) {
+                var withQR = $("#qr-switch").is(":checked")
                 event.preventDefault();
                 $.ajax({
                     type : "POST",
                     url : "/api/link",
                     data : {
                         url: $("#url-text").val(),
-                        withQR: $("#qr-switch").is(":checked")
+                        withQR: withQR
                     } ,
-                    success : function(msg, status, request) {
-                        $("#result").html(
-                            "<div class='alert alert-success lead'><a target='_blank' href='"
-                            + request.getResponseHeader('Location')
-                            + "'>"
-                            + request.getResponseHeader('Location')
-                            + "</a></div>");
+                    success : function(data) {
+                    $("#result").html(
+                       "<div class='alert alert-success lead'><a target='_blank' href='"
+                       + data.url
+                       + "'>"
+                       + data.url
+                       + "</a></div>");
+
+                    if (data.qr != null){
+                        $("#result").prepend(
+                          "<div class='alert alert-success lead'><a target='_blank' href='"
+                          + data.qr
+                          + "'>"
+                          + data.qr
+                          + "</a></div>");
+                    }
                     },
                     error : function() {
                         $("#result").html(
