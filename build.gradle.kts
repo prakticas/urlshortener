@@ -41,7 +41,15 @@ subprojects {
     }
 }
 
-project(":core") { }
+project(":core") {
+    apply(plugin = "org.jetbrains.kotlin.plugin.spring")
+    apply(plugin = "org.springframework.boot")
+    apply(plugin = "io.spring.dependency-management")
+    dependencies {
+        "implementation"("org.springframework.boot:spring-boot-starter-web")
+        "implementation"("org.springframework.boot:spring-boot-starter")
+    }
+}
 
 project(":repositories") {
     apply(plugin = "org.springframework.boot")
