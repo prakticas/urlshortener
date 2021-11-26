@@ -40,7 +40,7 @@ class QRControllerImpl(
             val qrFromUrl = qrUseCase.getQR(it)
             val h = HttpHeaders()
             val response = qrFromUrl.qr
-            return ResponseEntity(response, h, HttpStatus.CREATED)
+            return ResponseEntity(response, h, qrFromUrl.url.redirection.mode)
         }
     }
 
