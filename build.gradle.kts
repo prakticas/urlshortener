@@ -70,7 +70,6 @@ project(":delivery") {
     apply(plugin = "io.spring.dependency-management")
     dependencies {
         "implementation"(project(":core"))
-        "implementation"("org.springframework.boot:spring-boot-starter-web")
         "implementation"("org.springframework.boot:spring-boot-starter-hateoas")
         "implementation"("com.fasterxml.jackson.module:jackson-module-kotlin")
         "implementation"("commons-validator:commons-validator:1.6")
