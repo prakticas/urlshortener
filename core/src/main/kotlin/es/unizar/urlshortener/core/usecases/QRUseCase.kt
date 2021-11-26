@@ -13,12 +13,9 @@ interface QRUseCase {
 }
 
 class QRUseCaseImpl(private val qrRepositoryService: QRRepositoryService,
-                    private val qrService: QRService,
-                    private val validatorService: ValidatorService) : QRUseCase {
+                    private val qrService: QRService) : QRUseCase {
 
     private fun createQR(url: ShortUrl, data: QRProperties = QRProperties()): ByteArray {
-        val urlName = url.redirection.target
-        if(UrlError.NO_ERROR!=validatorService.isValid(urlName)) throw InvalidUrlException(urlName)
         return qrService.createQR(url, data).qr
     }
 
