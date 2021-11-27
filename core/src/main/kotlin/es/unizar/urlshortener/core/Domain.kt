@@ -3,6 +3,7 @@ package es.unizar.urlshortener.core
 
 import java.time.OffsetDateTime
 
+
 /**
  * A [Click] captures a request of redirection of a [ShortUrl] identified by its [hash].
  */
@@ -20,6 +21,11 @@ data class ShortUrl(
     val redirection: Redirection,
     val created: OffsetDateTime = OffsetDateTime.now(),
     val properties: ShortUrlProperties = ShortUrlProperties(),
+)
+
+data class CsvProfile(
+    val firstUri: String,
+    val file: String
 )
 
 /**
