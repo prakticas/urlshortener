@@ -3,6 +3,7 @@ package es.unizar.urlshortener.core
 
 import java.time.OffsetDateTime
 
+
 /**
  * A [Click] captures a request of redirection of a [ShortUrl] identified by its [hash].
  */
@@ -81,3 +82,14 @@ enum class UrlError(val msg: String) {
     INCORRECT_URL("the format of the url is not correct")
 }
 
+
+data class threatInfoURL(
+    val url:String
+)
+
+data class threatInfo(
+    val threatTypes: Array<String> = arrayOf("MALWARE", "SOCIAL_ENGINEERING"),
+    val platformTypes:Array<String> = arrayOf("WINDOWS", "LINUX"),
+    val threatEntryTypes:Array<String> = arrayOf("URL"),
+    val threatEntries:Array<threatInfoURL>,
+)

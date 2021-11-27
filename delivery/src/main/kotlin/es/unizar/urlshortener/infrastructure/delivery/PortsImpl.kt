@@ -1,5 +1,6 @@
 package es.unizar.urlshortener.infrastructure.delivery
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.common.hash.Hashing
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.client.j2se.MatrixToImageWriter
@@ -8,14 +9,41 @@ import com.google.zxing.qrcode.QRCodeWriter
 import com.google.zxing.qrcode.decoder.Decoder
 import es.unizar.urlshortener.core.*
 import org.apache.commons.validator.routines.UrlValidator
-import org.springframework.scheduling.annotation.Async
 import java.io.ByteArrayOutputStream
+import java.net.URI
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
 import java.nio.charset.StandardCharsets
+import com.google.gson.Gson
+
+
+
+const val API_KEY = "AIzaSyDaYva0tfN8k1Xb4Hrdl46UrxrBvV1WmIY"
 
 /**
  * Implementation of the port [ValidatorService].
  */
 class ValidatorServiceImpl : ValidatorService {
+
+    fun checkSafety(url: String):Boolean{
+
+        val urlAsked = threatInfoURL(url=url)
+        val body = threatInfo( threatEntries = arrayOf(urlAsked))
+        val threatInfoRqt = Gson().toJson(body)
+        val requestBody = "{threatInfo: $threatInfoRqt}"
+
+
+        val client = HttpClient.newBuilder().build();
+        val request = HttpRequest.newBuilder()
+            .uri(URI.create("https://safebrowsing.googleapis.com/v4/threatMatches:find?key=$API_KEY"))
+            .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+            .build()
+
+        val response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        return response.body().toString()=="{}\n"
+    }
+
     companion object {
         val urlValidator = UrlValidator(arrayOf("http", "https"))
     }
@@ -27,6 +55,7 @@ class ValidatorServiceImpl : ValidatorService {
         //checks availability
 
         //checks if it is safe
+        checkSafety(url)
 
 
 
@@ -37,6 +66,8 @@ class ValidatorServiceImpl : ValidatorService {
 
 
 }
+
+
 
 /**
  * Implementation of the port [HashService].
