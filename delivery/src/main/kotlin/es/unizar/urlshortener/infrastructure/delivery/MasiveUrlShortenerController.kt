@@ -33,8 +33,7 @@ interface MasiveUrlShortenerController {
 class MasiveUrlShortenerControllerImpl(
     val redirectUseCase: RedirectUseCase,
     val logClickUseCase: LogClickUseCase,
-    val createShortUrlUseCase: CreateShortUrlUseCase,
-    val qrUseCase: QRUseCase)
+    val createShortUrlUseCase: CreateShortUrlUseCase)
     :MasiveUrlShortenerController{
 
     @PostMapping("/api/upload")
