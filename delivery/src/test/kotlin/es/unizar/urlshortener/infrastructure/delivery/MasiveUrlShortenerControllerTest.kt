@@ -54,7 +54,7 @@ class MasiveUrlShortenerControllerTest {
             )
         ).willReturn(ShortUrl("f684a3c4", Redirection("http://example.com/")))
         val file = MockMultipartFile("file", "hello.txt", MediaType.TEXT_PLAIN_VALUE, "http://example.com/,y".toByteArray())
-        val response = "http://example.com/,http://localhost/tiny-f684a3c4,QR\n"
+        val response = "http://example.com/,http://localhost/tiny-f684a3c4,http://localhost/qr/f684a3c4\n"
         mockMvc.perform(
             multipart("/api/upload")
                 .file(file))

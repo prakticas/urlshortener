@@ -3,6 +3,7 @@ package es.unizar.urlshortener.infrastructure.delivery
 import es.unizar.urlshortener.core.ShortUrlProperties
 import es.unizar.urlshortener.core.usecases.CreateShortUrlUseCase
 import es.unizar.urlshortener.core.usecases.LogClickUseCase
+import es.unizar.urlshortener.core.usecases.QRUseCase
 import es.unizar.urlshortener.core.usecases.RedirectUseCase
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
@@ -61,7 +62,7 @@ class MasiveUrlShortenerControllerImpl(
             // calculo la URI del QR si fuera necesario
             var qrUri =""
             if(qr=="y"){
-                qrUri="QR"//falta que el servicio delvuelva lo correcto
+                qrUri= linkTo<QRControllerImpl> { redirectTo(shortUrl.hash, request) }.toUri().toString()
             }
 
             //Escribo la respuesta
