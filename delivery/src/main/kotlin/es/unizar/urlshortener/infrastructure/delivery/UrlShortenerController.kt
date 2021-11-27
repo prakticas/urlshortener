@@ -36,7 +36,10 @@ interface UrlShortenerController {
      *
      * **Note**: Delivery of use case [CreateShortUrlUseCase].
      */
-    fun shortener(data: ShortUrlDataIn, request: HttpServletRequest): ResponseEntity<ShortUrlDataOut>
+    fun shortener(
+        data: ShortUrlDataIn,
+        request: HttpServletRequest
+    ): ResponseEntity<ShortUrlDataOut>
 
 }
 
@@ -54,6 +57,7 @@ data class ShortUrlDataIn(
  */
 data class ShortUrlDataOut(
     val url: URI? = null,
+    val qr: URI? = null,
     val properties: Map<String, Any> = emptyMap(),
 )
 
@@ -71,7 +75,10 @@ class UrlShortenerControllerImpl(
 ) : UrlShortenerController {
 
     @GetMapping("/tiny-{id:.*}")
-    override fun redirectTo(@PathVariable id: String, request: HttpServletRequest): ResponseEntity<Void> =
+    override fun redirectTo(
+        @PathVariable id: String,
+        request: HttpServletRequest
+    ): ResponseEntity<Void> =
         redirectUseCase.redirectTo(id).let {
             logClickUseCase.logClick(id, ClickProperties(ip = request.remoteAddr))
             val h = HttpHeaders()
@@ -80,7 +87,10 @@ class UrlShortenerControllerImpl(
         }
 
     @PostMapping("/api/link", consumes = [MediaType.APPLICATION_FORM_URLENCODED_VALUE])
-    override fun shortener(data: ShortUrlDataIn, request: HttpServletRequest): ResponseEntity<ShortUrlDataOut> =
+    override fun shortener(
+        data: ShortUrlDataIn,
+        request: HttpServletRequest
+    ): ResponseEntity<ShortUrlDataOut> =
         //guardar la ip en la base de datos
         createShortUrlUseCase.create(
             url = data.url,
@@ -91,14 +101,16 @@ class UrlShortenerControllerImpl(
             //lo devuelvo por create es usado por la word 'it'
         ).let {
             val h = HttpHeaders()
-            val url: URI = if (data.withQR == true) {
-                linkTo<QRControllerImpl> { redirectTo(it.hash, request) }.toUri()
-            } else {
-                linkTo<UrlShortenerControllerImpl> { redirectTo(it.hash, request) }.toUri()
-            }
+            val url = linkTo<UrlShortenerControllerImpl> { redirectTo(it.hash, request) }.toUri()
+            var qr: URI? = null
             h.location = url
+            if (data.withQR == true) {
+                qr = linkTo<QRControllerImpl> { redirectTo(it.hash, request) }.toUri()
+                h.location = qr
+            }
             val response = ShortUrlDataOut(
                 url = url,
+                qr = qr,
                 properties = mapOf(
                     "safe" to it.properties.safe
                 )
@@ -108,6 +120,8 @@ class UrlShortenerControllerImpl(
 }
 
 
+
+}
 
 
 

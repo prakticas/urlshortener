@@ -1,12 +1,7 @@
 package es.unizar.urlshortener.core
 
 
-
-
-import com.google.zxing.common.BitMatrix
-import java.awt.image.BufferedImage
 import java.time.OffsetDateTime
-import java.util.*
 
 
 /**
@@ -81,3 +76,14 @@ data class QRProperties(
     val width: Int = 200,
     val height: Int = 200,
 )
+/*const val NO_ERROR = 0
+const val NOT_SECURE = 1
+const val NOT_AVAILABLE = 2
+const val INCORRECT_URL =3*/
+enum class UrlError(val msg: String) {
+    NO_ERROR("url correct"),
+    NOT_SECURE("the url is not secure"),
+    NOT_AVAILABLE("the url is not available now"),
+    INCORRECT_URL("the format of the url is not correct")
+}
+
