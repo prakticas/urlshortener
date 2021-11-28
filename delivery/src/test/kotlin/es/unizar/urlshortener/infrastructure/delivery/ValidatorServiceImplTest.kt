@@ -4,7 +4,9 @@ import es.unizar.urlshortener.core.UrlError
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
+import org.springframework.test.context.TestPropertySource
 
+@TestPropertySource
 internal class ValidatorServiceImplTest{
     private val testValidatorServiceImpl:ValidatorServiceImpl= ValidatorServiceImpl()
 

@@ -16,15 +16,21 @@ import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.nio.charset.StandardCharsets
 import com.google.gson.Gson
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.PropertySource
 
 
 
-const val API_KEY = "AIzaSyDaYva0tfN8k1Xb4Hrdl46UrxrBvV1WmIY"
 
 /**
  * Implementation of the port [ValidatorService].
  */
+
+@PropertySource
 class ValidatorServiceImpl : ValidatorService {
+
+    @Value("\${api.key}")
+    lateinit var  API_KEY :String
 
     fun checkSafety(url: String):Boolean{
 
@@ -33,7 +39,7 @@ class ValidatorServiceImpl : ValidatorService {
         val threatInfoRqt = Gson().toJson(body)
         val requestBody = "{threatInfo: $threatInfoRqt}"
 
-
+        val ak = API_KEY
         val client = HttpClient.newBuilder().build();
         val request = HttpRequest.newBuilder()
             .uri(URI.create("https://safebrowsing.googleapis.com/v4/threatMatches:find?key=$API_KEY"))
@@ -55,7 +61,8 @@ class ValidatorServiceImpl : ValidatorService {
         //checks availability
 
         //checks if it is safe
-        checkSafety(url)
+       if ( !checkSafety(url))
+           return UrlError.NOT_SECURE
 
 
 
