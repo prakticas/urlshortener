@@ -5,11 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css"
           href="webjars/bootstrap/3.3.5/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css"
+          href="index.css" />
     <script type="text/javascript" src="webjars/jquery/2.1.4/jquery.min.js"></script>
     <script type="text/javascript"
             src="webjars/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/app.js">
     </script>
+
 </head>
 <body>
 <div class="container-full">
@@ -19,9 +22,9 @@
             <p class="lead">A front-end example page for the project</p>
             <br>
             <form class="col-lg-12" role="form" id="shortener" action="">
-                <div class="custom-control custom-switch">
-                    <input type="checkbox" class="custom-control-input" id="qr-switch">
-                    <label class="custom-control-label" for="qr-switch">QR included</label>
+                <div class="form-check">
+                    <input type="checkbox" class="big-checkbox form-check-input" id="qr-switch">
+                    <label class="form-check-label" for="qr-switch">QR included</label>
                 </div>
                 <div class="input-group input-group-lg col-sm-offset-4 col-sm-4">
                     <input type="text" class="center-block form-control input-lg"
@@ -31,8 +34,19 @@
                     </span>
                 </div>
             </form>
+            <br />
+            <form class="col-lg-12" role="form" id="shortenerCSV" enctype="multipart/form-data" action="" style="margin-top: 20px">
+                <div class="input-group input-group-lg col-sm-offset-4 col-sm-4">
+                    <input type="file" class="center-block form-control-file input-lg" id="csv-input"
+                           accept=".csv">
+                    <span class="input-group-btn">
+                        <button class="btn btn-lg btn-primary" type="submit">Short CSV!</button>
+                    </span>
+                </div>
+            </form>
         </div>
     </div>
+    <hr/>
     <div class="row">
         <div class="col-lg-12 text-center">
             <div class="col-sm-offset-4 col-sm-4 text-center">
@@ -40,6 +54,20 @@
                 <div id="result" />
             </div>
         </div>
+    </div>
+    <div style="padding-left: 20px; padding-right: 20px">
+            <table class="table" id="table-results" hidden="hidden">
+                <thead>
+                <tr>
+                    <th scope="col"><h3>url</h3></th>
+                    <th scope="col"><h3>shorted url</h3></th>
+                    <th scope="col"><h3>QR</h3></th>
+                </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
     </div>
 </div>
 </body>

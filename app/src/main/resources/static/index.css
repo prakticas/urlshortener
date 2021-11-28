@@ -1,0 +1,11 @@
+.big-checkbox {
+    width: 20px;
+    height: 20px;
+}
+
+th > div {
+    max-width: 30vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
