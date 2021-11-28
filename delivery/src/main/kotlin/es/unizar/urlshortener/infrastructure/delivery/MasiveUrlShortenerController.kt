@@ -1,5 +1,6 @@
 package es.unizar.urlshortener.infrastructure.delivery
 
+import es.unizar.urlshortener.core.DataCSVIn
 import es.unizar.urlshortener.core.ShortUrlProperties
 import es.unizar.urlshortener.core.usecases.CreateShortUrlUseCase
 import es.unizar.urlshortener.core.usecases.LogClickUseCase
@@ -42,36 +43,19 @@ class MasiveUrlShortenerControllerImpl(
         val csvParser = CSVParser(reader, CSVFormat.DEFAULT.withDelimiter(',') )
         val writer = StringWriter()
         var firstUri =""
+        var data = ShortUrlProperties(
+            ip = request.remoteAddr,
+        )
 
-        for (line in csvParser){
-            //obtengo los valores de la linea
-            var url = line.get(0)
-            //var sponsor
-            var qr = line.get(1)
-            var data = ShortUrlProperties(
-                ip = request.remoteAddr,
-                sponsor = null
-            )
-            // calculo la URI del shortURL
-            var shortUrl = createShortUrlUseCase.create(
-                url = url,
-                data = data
-
-            )
-            var uri = linkTo<UrlShortenerControllerImpl> { redirectTo(shortUrl.hash, request) }.toUri().toString()
-            // calculo la URI del QR si fuera necesario
-            var qrUri =""
-            if(qr=="y"){
-                qrUri= linkTo<QRControllerImpl> { redirectTo(shortUrl.hash, request) }.toUri().toString()
+        val lines: List<List<String>> = csvParser
+            .map{DataCSVIn(url=it.get(0), qr= it.get(1))}
+            .map{createShortUrlUseCase.create(url=it.url,data =data.copy(hasQR=it.hasQR()))}
+            .map{
+                val uri = linkTo<UrlShortenerControllerImpl> { redirectTo(it.hash, request) }.toUri().toString()
+                val qr = if (it.properties.hasQR == true) linkTo<QRControllerImpl> { redirectTo(it.hash, request) }.toUri().toString() else ""
+                listOf(it.redirection.target,uri,qr)
             }
-
-            //Escribo la respuesta
-            writer.write(url+","+uri+","+qrUri+"\n")
-
-            if (firstUri == ""){
-                firstUri= shortUrl.hash
-            }
-        }
+        lines.forEach{ writer.write(it.joinToString(",", postfix = "\n"))}
 
         val resource = writer.toString()
         val url = linkTo<UrlShortenerControllerImpl> { redirectTo(firstUri, request) }.toUri()
