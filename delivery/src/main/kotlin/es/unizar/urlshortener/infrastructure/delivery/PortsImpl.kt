@@ -18,19 +18,29 @@ import java.nio.charset.StandardCharsets
 import com.google.gson.Gson
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.PropertySource
-
-
+import org.springframework.stereotype.Component
 
 
 /**
  * Implementation of the port [ValidatorService].
  */
 
-@PropertySource
-class ValidatorServiceImpl : ValidatorService {
+@Component
+class ExternalData{
+    @Value("\${apiKey}")
+    lateinit var  apiKey :String
+    fun apiKey():String= apiKey
 
-    @Value("\${api.key}")
-    lateinit var  API_KEY :String
+
+
+}
+
+
+class ValidatorServiceImpl(
+    private val externalData:ExternalData
+) : ValidatorService {
+
+
 
     fun checkSafety(url: String):Boolean{
 
@@ -39,10 +49,10 @@ class ValidatorServiceImpl : ValidatorService {
         val threatInfoRqt = Gson().toJson(body)
         val requestBody = "{threatInfo: $threatInfoRqt}"
 
-        val ak = API_KEY
+        val ak = externalData.apiKey()
         val client = HttpClient.newBuilder().build();
         val request = HttpRequest.newBuilder()
-            .uri(URI.create("https://safebrowsing.googleapis.com/v4/threatMatches:find?key=$API_KEY"))
+            .uri(URI.create("https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${externalData.apiKey()}"))
             .POST(HttpRequest.BodyPublishers.ofString(requestBody))
             .build()
 
