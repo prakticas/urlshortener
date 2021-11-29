@@ -42,7 +42,7 @@ class ValidatorServiceImpl(
 
 
 
-    fun checkSafety(url: String):Boolean{
+    private fun checkSafety(url: String):Boolean{
 
         val urlAsked = threatInfoURL(url=url)
         val body = threatInfo( threatEntries = arrayOf(urlAsked))
