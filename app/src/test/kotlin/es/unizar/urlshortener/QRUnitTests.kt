@@ -67,6 +67,7 @@ class QRUnitTests {
     }
 
     //FIXME:
+
     @Test
     fun `should not create a QR code correctly if is not encoded correctly`(){
         // Given

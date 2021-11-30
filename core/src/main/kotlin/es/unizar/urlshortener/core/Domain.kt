@@ -23,6 +23,8 @@ data class ShortUrl(
     val properties: ShortUrlProperties = ShortUrlProperties(),
 )
 
+
+
 /**
  * A [QRFromUrl] specifies the [qr] that is obtained from [url]
  */
@@ -50,7 +52,8 @@ data class ShortUrlProperties(
     val sponsor: String? = null,
     val safe: Boolean = true,
     val owner: String? = null,
-    val country: String? = null
+    val country: String? = null,
+    val hasQR:Boolean?=null
 )
 
 /**
@@ -71,16 +74,14 @@ data class QRProperties(
     val width: Int = 200,
     val height: Int = 200,
 )
-/*const val NO_ERROR = 0
-const val NOT_SECURE = 1
-const val NOT_AVAILABLE = 2
-const val INCORRECT_URL =3*/
+
 enum class UrlError(val msg: String) {
     NO_ERROR("url correct"),
     NOT_SECURE("the url is not secure"),
     NOT_AVAILABLE("the url is not available now"),
     INCORRECT_URL("the format of the url is not correct")
 }
+
 
 
 data class threatInfoURL(
@@ -93,3 +94,14 @@ data class threatInfo(
     val threatEntryTypes:Array<String> = arrayOf("URL"),
     val threatEntries:Array<threatInfoURL>,
 )
+
+data class DataCSVIn(
+    val url:String,
+    val qr: String
+){
+    fun hasQR() = qr =="y"
+}
+
+
+
+

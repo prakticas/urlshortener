@@ -2,15 +2,22 @@ package es.unizar.urlshortener.infrastructure.delivery
 
 import es.unizar.urlshortener.core.*
 import es.unizar.urlshortener.core.usecases.*
+import org.springframework.core.io.InputStreamResource
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.http.MediaType.parseMediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
+import java.io.ByteArrayInputStream
 import java.net.URI
 import javax.servlet.http.HttpServletRequest
+import org.apache.commons.csv.CSVFormat
+import org.apache.commons.csv.CSVParser
+import java.io.StringWriter
+
 
 /**
  * The specification of the controller.
@@ -29,7 +36,10 @@ interface UrlShortenerController {
      *
      * **Note**: Delivery of use case [CreateShortUrlUseCase].
      */
-    fun shortener(data: ShortUrlDataIn, request: HttpServletRequest): ResponseEntity<ShortUrlDataOut>
+    fun shortener(
+        data: ShortUrlDataIn,
+        request: HttpServletRequest
+    ): ResponseEntity<ShortUrlDataOut>
 
 }
 
@@ -47,6 +57,7 @@ data class ShortUrlDataIn(
  */
 data class ShortUrlDataOut(
     val url: URI? = null,
+    val qr: URI? = null,
     val properties: Map<String, Any> = emptyMap(),
 )
 
@@ -64,7 +75,10 @@ class UrlShortenerControllerImpl(
 ) : UrlShortenerController {
 
     @GetMapping("/tiny-{id:.*}")
-    override fun redirectTo(@PathVariable id: String, request: HttpServletRequest): ResponseEntity<Void> =
+    override fun redirectTo(
+        @PathVariable id: String,
+        request: HttpServletRequest
+    ): ResponseEntity<Void> =
         redirectUseCase.redirectTo(id).let {
             logClickUseCase.logClick(id, ClickProperties(ip = request.remoteAddr))
             val h = HttpHeaders()
@@ -72,8 +86,11 @@ class UrlShortenerControllerImpl(
             ResponseEntity<Void>(h, HttpStatus.valueOf(it.redirection.mode))
         }
 
-    @PostMapping("/api/link", consumes = [ MediaType.APPLICATION_FORM_URLENCODED_VALUE ])
-    override fun shortener(data: ShortUrlDataIn, request: HttpServletRequest): ResponseEntity<ShortUrlDataOut> =
+    @PostMapping("/api/link", consumes = [MediaType.APPLICATION_FORM_URLENCODED_VALUE])
+    override fun shortener(
+        data: ShortUrlDataIn,
+        request: HttpServletRequest
+    ): ResponseEntity<ShortUrlDataOut> =
         //guardar la ip en la base de datos
         createShortUrlUseCase.create(
             url = data.url,
@@ -84,49 +101,27 @@ class UrlShortenerControllerImpl(
             //lo devuelvo por create es usado por la word 'it'
         ).let {
             val h = HttpHeaders()
-            val url: URI = if (data.withQR == true){
-                linkTo<QRControllerImpl> { redirectTo( it.hash, request) }.toUri()
-            } else {
-                linkTo<UrlShortenerControllerImpl> { redirectTo(it.hash, request) }.toUri()
-            }
+            val url = linkTo<UrlShortenerControllerImpl> { redirectTo(it.hash, request) }.toUri()
+            var qr: URI? = null
             h.location = url
+            if (data.withQR == true) {
+                qr = linkTo<QRControllerImpl> { redirectTo(it.hash, request) }.toUri()
+                h.location = qr
+            }
             val response = ShortUrlDataOut(
                 url = url,
+                qr = qr,
                 properties = mapOf(
                     "safe" to it.properties.safe
                 )
             )
             ResponseEntity<ShortUrlDataOut>(response, h, HttpStatus.CREATED)
         }
+}
 
-    @PostMapping("/api/upload")
-    fun handleFileUpload(@RequestParam("file") file: MultipartFile,request: HttpServletRequest): ResponseEntity<ShortUrlDataOut> {
 
-        val urlFile = "http://example.com/"
-        val sponsor = "sp"
-        //guardar la ip en la base de datos
-        val shortUrl = createShortUrlUseCase.create(
-            url = urlFile,
-            data = ShortUrlProperties(
-                ip = request.remoteAddr,
-                sponsor = sponsor
-            ))
 
-            val h = HttpHeaders()
-            //obetner la uri comrpimida de la uri inicial
-            val url = linkTo<UrlShortenerControllerImpl> { redirectTo(shortUrl.hash, request) }.toUri()
-            h.location = url
-            val response = ShortUrlDataOut(
-                url = url,
-                properties = mapOf(
-                    "safe" to shortUrl.properties.safe
-                )
-            )
-            return ResponseEntity<ShortUrlDataOut>(response, h, HttpStatus.CREATED)
 
-        }
-
-    }
 
 
 
