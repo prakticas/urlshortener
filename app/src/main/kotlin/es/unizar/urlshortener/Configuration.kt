@@ -1,6 +1,7 @@
 package es.unizar.urlshortener
 
 import es.unizar.urlshortener.core.usecases.*
+import es.unizar.urlshortener.infrastructure.delivery.ExternalData
 import es.unizar.urlshortener.infrastructure.delivery.HashServiceImpl
 import es.unizar.urlshortener.infrastructure.delivery.QRServiceImpl
 import es.unizar.urlshortener.infrastructure.delivery.ValidatorServiceImpl
@@ -21,7 +22,8 @@ import org.springframework.scheduling.annotation.EnableAsync
 class ApplicationConfiguration(
     @Autowired val shortUrlEntityRepository: ShortUrlEntityRepository,
     @Autowired val clickEntityRepository: ClickEntityRepository,
-    @Autowired val qrEntityRepository: QREntityRepository
+    @Autowired val qrEntityRepository: QREntityRepository,
+    @Autowired val externalData: ExternalData
 ) {
     @Bean
     fun clickRepositoryService() = ClickRepositoryServiceImpl(clickEntityRepository)
@@ -33,7 +35,7 @@ class ApplicationConfiguration(
     fun qrRepositoryService() = QRRepositoryServiceImpl(qrEntityRepository)
 
     @Bean
-    fun validatorService() = ValidatorServiceImpl()
+    fun validatorService() = ValidatorServiceImpl(externalData)
 
     @Bean
     fun hashService() = HashServiceImpl()
@@ -52,4 +54,7 @@ class ApplicationConfiguration(
 
     @Bean
     fun createQRUseCase() = QRUseCaseImpl(qrRepositoryService(), qrService(), validatorService())
+
+
+
 }

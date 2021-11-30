@@ -82,12 +82,26 @@ enum class UrlError(val msg: String) {
     INCORRECT_URL("the format of the url is not correct")
 }
 
+
+
+data class threatInfoURL(
+    val url:String
+)
+
+data class threatInfo(
+    val threatTypes: Array<String> = arrayOf("MALWARE", "SOCIAL_ENGINEERING"),
+    val platformTypes:Array<String> = arrayOf("WINDOWS", "LINUX"),
+    val threatEntryTypes:Array<String> = arrayOf("URL"),
+    val threatEntries:Array<threatInfoURL>,
+)
+
 data class DataCSVIn(
     val url:String,
     val qr: String
 ){
     fun hasQR() = qr =="y"
 }
+
 
 
 
