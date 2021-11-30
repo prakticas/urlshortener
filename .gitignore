@@ -37,4 +37,6 @@ out/
 
 
 ## Secrets ##
-*resources/application-*.properties
+app/src/main/resources/application-locale.properties
+delivery/src/test/resources/application-test.properties
+
