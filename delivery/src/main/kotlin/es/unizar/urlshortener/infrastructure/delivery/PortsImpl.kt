@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class ExternalData{
-    @Value("\${APIKEY}")
+    @Value("\${apiKey}")
     lateinit var  apiKey :String
     fun apiKey():String= apiKey
 
