@@ -25,7 +25,7 @@ import java.util.concurrent.Executor
 class ApplicationConfiguration(
     @Autowired val shortUrlEntityRepository: ShortUrlEntityRepository,
     @Autowired val clickEntityRepository: ClickEntityRepository,
-    @Autowired val qrEntityRepository: QREntityRepository
+    @Autowired val qrEntityRepository: QREntityRepository,
     @Autowired val externalData: ExternalData
 ): AsyncConfigurer {
 
