@@ -79,7 +79,7 @@ enum class UrlError(val msg: String) {
     NO_ERROR("url correct"),
     NOT_SECURE("the url is not secure"),
     NOT_AVAILABLE("the url is not available now"),
-    INCORRECT_URL("the format of the url is not correct")
+    INCORRECT_URL("the url format  is  incorrect")
 }
 
 data class threatInfoURL(
