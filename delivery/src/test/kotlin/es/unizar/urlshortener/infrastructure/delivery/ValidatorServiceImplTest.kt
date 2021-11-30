@@ -44,10 +44,9 @@ internal class ValidatorServiceImplTest{
 
 
     @Test
-    @Disabled
     fun `Url is not secure`(){
         val expected = UrlError.NOT_SECURE
-        val actual = testValidatorServiceImpl.isValid("ftp://example.com/")
+        val actual = testValidatorServiceImpl.isValid("https://testsafebrowsing.appspot.com/s/phishing.html")
         assertEquals(expected,actual)
 
     }
