@@ -29,9 +29,10 @@ $(document).ready(
                                 + "</a></div>");
                         }
                     },
-                    error : function() {
+                    error : function(xhr) {
+                        let err = JSON.parse(xhr.responseText)
                         $("#result").html(
-                            "<div class='alert alert-danger lead'>ERROR</div>");
+                            "<div class='alert alert-danger lead'>" + err.message + "</div>");
                     }
                 });
             });
