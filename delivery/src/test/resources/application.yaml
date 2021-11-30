@@ -1,7 +1,7 @@
 # Spring Datasource
 spring:
   profiles:
-    active: locale
+    active: test
   datasource:
     url: jdbc:hsqldb:mem:.
     username: sa
