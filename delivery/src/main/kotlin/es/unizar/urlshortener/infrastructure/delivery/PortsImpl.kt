@@ -1,5 +1,6 @@
 package es.unizar.urlshortener.infrastructure.delivery
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.common.hash.Hashing
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.client.j2se.MatrixToImageWriter
@@ -8,14 +9,57 @@ import com.google.zxing.qrcode.QRCodeWriter
 import com.google.zxing.qrcode.decoder.Decoder
 import es.unizar.urlshortener.core.*
 import org.apache.commons.validator.routines.UrlValidator
-import org.springframework.scheduling.annotation.Async
 import java.io.ByteArrayOutputStream
+import java.net.URI
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
 import java.nio.charset.StandardCharsets
+import com.google.gson.Gson
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.PropertySource
+import org.springframework.stereotype.Component
+
 
 /**
  * Implementation of the port [ValidatorService].
  */
-class ValidatorServiceImpl : ValidatorService {
+
+@Component
+class ExternalData{
+    @Value("\${apiKey}")
+    lateinit var  apiKey :String
+    fun apiKey():String= apiKey
+
+
+
+}
+
+
+class ValidatorServiceImpl(
+    private val externalData:ExternalData
+) : ValidatorService {
+
+
+
+    private fun checkSafety(url: String):Boolean{
+
+        val urlAsked = threatInfoURL(url=url)
+        val body = threatInfo( threatEntries = arrayOf(urlAsked))
+        val threatInfoRqt = Gson().toJson(body)
+        val requestBody = "{threatInfo: $threatInfoRqt}"
+
+        val ak = externalData.apiKey()
+        val client = HttpClient.newBuilder().build();
+        val request = HttpRequest.newBuilder()
+            .uri(URI.create("https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${externalData.apiKey()}"))
+            .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+            .build()
+
+        val response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        return response.body().toString()=="{}\n"
+    }
+
     companion object {
         val urlValidator = UrlValidator(arrayOf("http", "https"))
     }
@@ -27,6 +71,8 @@ class ValidatorServiceImpl : ValidatorService {
         //checks availability
 
         //checks if it is safe
+       if ( !checkSafety(url))
+           return UrlError.NOT_SECURE
 
 
 
@@ -37,6 +83,8 @@ class ValidatorServiceImpl : ValidatorService {
 
 
 }
+
+
 
 /**
  * Implementation of the port [HashService].

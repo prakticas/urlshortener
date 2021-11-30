@@ -50,9 +50,9 @@ class MasiveUrlShortenerControllerTest {
         given(
             createShortUrlUseCase.create(
                 url = "http://example.com/",
-                data = ShortUrlProperties(ip = "127.0.0.1")
+                data = ShortUrlProperties(ip = "127.0.0.1", hasQR = true)
             )
-        ).willReturn(ShortUrl("f684a3c4", Redirection("http://example.com/")))
+        ).willReturn(ShortUrl("f684a3c4", Redirection("http://example.com/"),properties = ShortUrlProperties(ip= "127.0.0.1", hasQR = true)))
         val file = MockMultipartFile("file", "hello.txt", MediaType.TEXT_PLAIN_VALUE, "http://example.com/,y".toByteArray())
         val response = "http://example.com/,http://localhost/tiny-f684a3c4,http://localhost/qr/f684a3c4\n"
         mockMvc.perform(
@@ -60,7 +60,7 @@ class MasiveUrlShortenerControllerTest {
                 .file(file))
             .andDo(print())
             .andExpect(status().isCreated)
-            .andExpect(content().bytes(response.toByteArray()))
+            .andExpect(content().string(response))
 
 
 

@@ -1,9 +1,7 @@
 package es.unizar.urlshortener
 
-import es.unizar.urlshortener.core.usecases.CreateShortUrlUseCaseImpl
-import es.unizar.urlshortener.core.usecases.LogClickUseCaseImpl
-import es.unizar.urlshortener.core.usecases.QRUseCaseImpl
-import es.unizar.urlshortener.core.usecases.RedirectUseCaseImpl
+import es.unizar.urlshortener.core.usecases.*
+import es.unizar.urlshortener.infrastructure.delivery.ExternalData
 import es.unizar.urlshortener.infrastructure.delivery.HashServiceImpl
 import es.unizar.urlshortener.infrastructure.delivery.QRServiceImpl
 import es.unizar.urlshortener.infrastructure.delivery.ValidatorServiceImpl
@@ -28,6 +26,7 @@ class ApplicationConfiguration(
     @Autowired val shortUrlEntityRepository: ShortUrlEntityRepository,
     @Autowired val clickEntityRepository: ClickEntityRepository,
     @Autowired val qrEntityRepository: QREntityRepository
+    @Autowired val externalData: ExternalData
 ): AsyncConfigurer {
 
     @Bean(name = ["asynchronousListenerExecutor"])
@@ -39,7 +38,7 @@ class ApplicationConfiguration(
         executor.initialize()
         return executor
     }
-
+   
     @Bean
     fun clickRepositoryService() = ClickRepositoryServiceImpl(clickEntityRepository)
 
@@ -50,7 +49,7 @@ class ApplicationConfiguration(
     fun qrRepositoryService() = QRRepositoryServiceImpl(qrEntityRepository)
 
     @Bean
-    fun validatorService() = ValidatorServiceImpl()
+    fun validatorService() = ValidatorServiceImpl(externalData)
 
     @Bean
     fun hashService() = HashServiceImpl()
