@@ -48,14 +48,27 @@ class MasiveUrlShortenerControllerImpl(
         val lines: List<List<String>> = csvParser
             .map{DataCSVIn(url=it.get(0), qr= it.get(1))}
             .map{
-                createShortUrlUseCase.create(url=it.url,data =ShortUrlProperties(
+                createShortUrlUseCase.createWithError(url=it.url,data =ShortUrlProperties(
                 ip = request.remoteAddr,
                 hasQR=it.hasQR()
             ))}
             .map{
-                val uri = linkTo<UrlShortenerControllerImpl> { redirectTo(it.hash, request) }.toUri().toString()
-                val qr = if (it.properties.hasQR == true) linkTo<QRControllerImpl> { redirectTo(it.hash, request) }.toUri().toString() else ""
-                listOf(it.redirection.target,uri,qr)
+                val uri:String
+                val qr:String
+                val origin:String
+                if (it.url!=null){
+                     uri = linkTo<UrlShortenerControllerImpl> { redirectTo(it.url!!.hash, request) }.toUri().toString()
+                     qr = if (it.url!!.properties.hasQR == true) linkTo<QRControllerImpl> { redirectTo(it.url!!.hash, request) }.toUri().toString() else ""
+                    origin= it.url!!.redirection.target
+
+                }
+                else{
+                    origin=it.origin
+                    uri=it.error.msg
+                    qr=""
+                }
+
+                listOf(origin,uri,qr)
             }
         lines.forEach{ writer.write(it.joinToString(",", postfix = "\n"))}
 

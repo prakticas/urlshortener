@@ -11,6 +11,7 @@ import java.util.Date
  */
 interface CreateShortUrlUseCase {
     fun create(url: String, data: ShortUrlProperties): ShortUrl
+    fun createWithError(url: String, data: ShortUrlProperties): ShortUrlWithError
 }
 
 /**
@@ -38,4 +39,32 @@ class CreateShortUrlUseCaseImpl(
         } else {
             throw InvalidUrlException(url)
         }
+
+    override fun createWithError(url: String, data: ShortUrlProperties): ShortUrlWithError {
+        val err = validatorService.isValid(url)
+        if (err == UrlError.NO_ERROR) {
+            val id: String = hashService.hasUrl(url)
+            val su = ShortUrl(
+                hash = id,
+                redirection = Redirection(target = url),
+                properties = ShortUrlProperties(
+                    safe = data.safe,
+                    ip = data.ip,
+                    sponsor = data.sponsor,
+                    hasQR = data.hasQR
+                )
+            )
+
+            return ShortUrlWithError(
+                url = shortUrlRepository.save(su)
+            )
+
+
+        } else {
+            return ShortUrlWithError(
+                origin = url,
+                error = err
+            )
+        }
+    }
 }
