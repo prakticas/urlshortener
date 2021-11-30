@@ -5,12 +5,25 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 import org.springframework.test.context.TestPropertySource
 
-@TestPropertySource
+@Configuration
+internal class ValidatorServiceImplConfig {
+    @Bean
+    fun externalData(): ExternalData = ExternalData()
+
+    @Bean
+    fun testValidatorServiceImpl(): ValidatorServiceImpl = ValidatorServiceImpl(externalData())
+}
+
+
+@SpringBootTest(classes = [ValidatorServiceImplConfig::class])
 internal class ValidatorServiceImplTest{
-    @Autowired val externalData = ExternalData()
-    private val testValidatorServiceImpl:ValidatorServiceImpl= ValidatorServiceImpl(externalData)
+    @Autowired private lateinit var testValidatorServiceImpl: ValidatorServiceImpl
+
 
 
     @Test
