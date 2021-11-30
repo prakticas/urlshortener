@@ -1,28 +1,28 @@
 package es.unizar.urlshortener.core.usecases
 
 import es.unizar.urlshortener.core.*
-
-
+import org.springframework.scheduling.annotation.Async
 /**
  * Given an url hash returns the key that is used to create a qrL.
  *
  * **Note**: This is an example of functionality.
  */
 interface QRUseCase {
-    fun create(url: ShortUrl): QRFromUrl
+    fun getQR(url: ShortUrl): QRFromUrl
+    @Async
+    fun createQRAsync(url: ShortUrl, data: QRProperties = QRProperties())
 }
-
 class QRUseCaseImpl(private val qrRepositoryService: QRRepositoryService,
-                    private val qrService: QRService,
-                    private val validatorService: ValidatorService) : QRUseCase {
+                    private val qrService: QRService) : QRUseCase {
 
     private fun createQR(url: ShortUrl, data: QRProperties = QRProperties()): ByteArray {
-        val urlName = url.redirection.target
-        if(UrlError.NO_ERROR!=validatorService.isValid(urlName)) throw InvalidUrlException(urlName)
         return qrService.createQR(url, data).qr
     }
+    override fun createQRAsync(url: ShortUrl, data: QRProperties) {
+        qrRepositoryService.save(QRFromUrl(url, createQR(url)))
+    }
 
-    override fun create(url: ShortUrl): QRFromUrl {
+    override fun getQR(url: ShortUrl): QRFromUrl {
         return qrRepositoryService.findByKey(url.hash)
             ?: qrRepositoryService.save(QRFromUrl(url, createQR(url)))
     }

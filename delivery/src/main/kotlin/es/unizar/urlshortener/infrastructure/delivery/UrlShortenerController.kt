@@ -72,6 +72,7 @@ class UrlShortenerControllerImpl(
     val redirectUseCase: RedirectUseCase,
     val logClickUseCase: LogClickUseCase,
     val createShortUrlUseCase: CreateShortUrlUseCase,
+    val createQRUseCase: QRUseCase
 ) : UrlShortenerController {
 
     @GetMapping("/tiny-{id:.*}")
@@ -105,6 +106,7 @@ class UrlShortenerControllerImpl(
             var qr: URI? = null
             h.location = url
             if (data.withQR == true) {
+                createQRUseCase.createQRAsync(it)
                 qr = linkTo<QRControllerImpl> { redirectTo(it.hash, request) }.toUri()
                 h.location = qr
             }
