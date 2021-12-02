@@ -57,11 +57,11 @@ class HttpRequestTest {
 
     @Test
     fun `redirectTo returns a redirect when the key exists`() {
-        val target = shortUrl("http://example.com/").headers.location
+        val target = shortUrl("http://ejemplo.com/").headers.location
         require(target != null)
         val response = restTemplate.getForEntity(target, String::class.java)
         assertThat(response.statusCode).isEqualTo(HttpStatus.TEMPORARY_REDIRECT)
-        assertThat(response.headers.location).isEqualTo(URI.create("http://example.com/"))
+        assertThat(response.headers.location).isEqualTo(URI.create("http://ejemplo.com/"))
 
         assertThat(JdbcTestUtils.countRowsInTable(jdbcTemplate, "click")).isEqualTo(1)
     }
@@ -76,11 +76,11 @@ class HttpRequestTest {
 
     @Test
     fun `creates returns a basic redirect if it can compute a hash`() {
-        val response = shortUrl("http://example.com/")
+        val response = shortUrl("http://ejemplo.com/")
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
-        assertThat(response.headers.location).isEqualTo(URI.create("http://localhost:$port/tiny-f684a3c4"))
-        assertThat(response.body?.url).isEqualTo(URI.create("http://localhost:$port/tiny-f684a3c4"))
+        assertThat(response.headers.location).isEqualTo(URI.create("http://localhost:$port/tiny-7a2cf23d"))
+        assertThat(response.body?.url).isEqualTo(URI.create("http://localhost:$port/tiny-7a2cf23d"))
 
         assertThat(JdbcTestUtils.countRowsInTable(jdbcTemplate, "shorturl")).isEqualTo(1)
         assertThat(JdbcTestUtils.countRowsInTable(jdbcTemplate, "click")).isEqualTo(0)
