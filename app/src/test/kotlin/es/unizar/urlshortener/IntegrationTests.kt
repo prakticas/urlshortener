@@ -79,8 +79,8 @@ class HttpRequestTest {
         val response = shortUrl("http://ejemplo.com/")
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
-        assertThat(response.headers.location).isEqualTo(URI.create("http://localhost:$port/tiny-7a2cf23d"))
-        assertThat(response.body?.url).isEqualTo(URI.create("http://localhost:$port/tiny-7a2cf23d"))
+        assertThat(response.headers.location).isEqualTo(URI.create("http://localhost:$port/tiny-3adb4026"))
+        assertThat(response.body?.url).isEqualTo(URI.create("http://localhost:$port/tiny-3adb4026"))
 
         assertThat(JdbcTestUtils.countRowsInTable(jdbcTemplate, "shorturl")).isEqualTo(1)
         assertThat(JdbcTestUtils.countRowsInTable(jdbcTemplate, "click")).isEqualTo(0)
