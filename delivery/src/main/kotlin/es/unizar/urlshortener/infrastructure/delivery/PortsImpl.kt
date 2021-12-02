@@ -69,10 +69,8 @@ class ValidatorServiceImpl(
             urlc.setConnectTimeout(10 * 1000);   // 10 s.
             urlc.connect();
             if (urlc.getResponseCode() < 400) {  // 200 = "OK" code (http connection is fine).
-                System.out.println("Si" + urlc.getResponseCode())
                 return true && urlValidator.isValid(url);
             } else {
-                System.out.println("No" + urlc.getResponseCode())
                 return false;
             }
         } catch (e : Exception) {
