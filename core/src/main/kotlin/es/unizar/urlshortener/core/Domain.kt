@@ -79,10 +79,8 @@ enum class UrlError(val msg: String) {
     NO_ERROR("url correct"),
     NOT_SECURE("the url is not secure"),
     NOT_AVAILABLE("the url is not available now"),
-    INCORRECT_URL("the format of the url is not correct")
+    INCORRECT_URL("the url format  is  incorrect")
 }
-
-
 
 data class threatInfoURL(
     val url:String
@@ -95,6 +93,7 @@ data class threatInfo(
     val threatEntries:Array<threatInfoURL>,
 )
 
+
 data class DataCSVIn(
     val url:String,
     val qr: String
@@ -102,6 +101,11 @@ data class DataCSVIn(
     fun hasQR() = qr =="y"
 }
 
+data class ShortUrlWithError(
+    val url:ShortUrl?= null,
+    val error:UrlError=UrlError.NO_ERROR,
+    val origin:String=""
+)
 
 
 

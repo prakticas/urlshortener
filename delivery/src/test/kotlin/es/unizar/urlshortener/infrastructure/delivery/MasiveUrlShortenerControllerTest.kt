@@ -1,9 +1,6 @@
 package es.unizar.urlshortener.infrastructure.delivery
 
-import es.unizar.urlshortener.core.InvalidUrlException
-import es.unizar.urlshortener.core.Redirection
-import es.unizar.urlshortener.core.ShortUrl
-import es.unizar.urlshortener.core.ShortUrlProperties
+import es.unizar.urlshortener.core.*
 import es.unizar.urlshortener.core.usecases.CreateShortUrlUseCase
 import es.unizar.urlshortener.core.usecases.LogClickUseCase
 import es.unizar.urlshortener.core.usecases.RedirectUseCase
@@ -47,12 +44,16 @@ class MasiveUrlShortenerControllerTest {
 
     @Test
     fun `handleFileUpload returns a file if the file given has a correct structure`() {
+        val urlWithError = ShortUrlWithError(
+            url=ShortUrl("f684a3c4", Redirection("http://example.com/"),properties = ShortUrlProperties(ip= "127.0.0.1", hasQR = true))
+        )
+
         given(
-            createShortUrlUseCase.create(
+            createShortUrlUseCase.createWithError(
                 url = "http://example.com/",
                 data = ShortUrlProperties(ip = "127.0.0.1", hasQR = true)
             )
-        ).willReturn(ShortUrl("f684a3c4", Redirection("http://example.com/"),properties = ShortUrlProperties(ip= "127.0.0.1", hasQR = true)))
+        ).willReturn(urlWithError)
         val file = MockMultipartFile("file", "hello.txt", MediaType.TEXT_PLAIN_VALUE, "http://example.com/,y".toByteArray())
         val response = "http://example.com/,http://localhost/tiny-f684a3c4,http://localhost/qr/f684a3c4\n"
         mockMvc.perform(

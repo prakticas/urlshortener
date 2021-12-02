@@ -56,22 +56,30 @@ $(document).ready(
                             $("#result").html("")
                             $("#table-results tbody").empty()
                             let fileList = csvToArray(file)
-                            fileList.map(e => {
-                                const {url, shortUrl, qr} = e
-                                if (qr === ""){
+                            fileList.map(({url, shortUrl, qr}) => {
                                     $("#table-results").append("<tr>\n" +
-                                        "                    <th scope=\"row\"><div class='alert alert-info lead'><a target='_blank' href='" + url + "'>" + url + "</a></div></th>\n" +
-                                        "                    <td><div class='alert alert-success lead'><a target='_blank' href='" + shortUrl + "'>" + shortUrl + "</a></div></td>\n" +
-                                        "                    <td></td>\n" +
+                                        "                    <th scope=\"row\">" +
+                                        "                       <div class='alert alert-info lead'>" +
+                                        "                           <a target='_blank' href='" + url + "'>" + url + "</a>" +
+                                        "                       </div>" +
+                                        "                    </th>\n" +
+                                        "                    <td>" +
+                                        ((!checkIfError(shortUrl)) ?
+                                            ("<div class='alert alert-success lead'>" +
+                                                "<a target='_blank' href='" + shortUrl + "'>" + shortUrl + "</a>" +
+                                                "</div>")
+                                            : ("<div class='alert alert-danger lead'>" +
+                                                "<span>" + shortUrl + "</span>" +
+                                                "</div>")) +
+                                        "                   </td>\n" +
+                                        "                   <td>"+
+                                        ((qr !== "") ?
+                                            ("<div class='alert alert-success lead'>" +
+                                                "<a target='_blank' href='" + qr + "'>" + qr + "</a>" +
+                                            "</div>")
+                                            : "") +
+                                        "                   </td>\n" +
                                         "                </tr>")
-                                } else {
-                                    $("#table-results").append("<tr>\n" +
-                                        "                    <th scope=\"row\"><div class='alert alert-info lead'><a target='_blank' href='" + url + "'>" + url + "</a></div></th>\n" +
-                                        "                    <td><div class='alert alert-success lead'><a target='_blank' href='" + shortUrl + "'>" + shortUrl + "</a></div></td>\n" +
-                                        "                    <td><div class='alert alert-success lead'><a target='_blank' href='" + qr + "'>" + qr + "</a></div></td>\n" +
-                                        "                </tr>")
-                                }
-
                             })
                         },
                         error: function () {
@@ -83,19 +91,18 @@ $(document).ready(
             });
     });
 
-function csvToArray(str, delimiter = ",") {
-    const headers = ["url","shortUrl", "qr"]
+const csvToArray = (str, delimiter = ",")  => {
+    const headers = ["url", "shortUrl", "qr"]
     const rows = str.split("\n")
     rows.pop()
-    const arr = rows.map(function (row) {
+    return rows.map(function (row) {
         const values = row.split(delimiter);
-        const el = headers.reduce(function (object, header, index) {
+        return headers.reduce(function (object, header, index) {
             object[header] = values[index];
             return object;
         }, {});
-        return el;
     });
-
-    // return the array
-    return arr;
+}
+const checkIfError = (url) => {
+    return !RegExp('^http').test(url)
 }
