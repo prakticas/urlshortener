@@ -19,6 +19,8 @@ import com.google.gson.Gson
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.PropertySource
 import org.springframework.stereotype.Component
+import java.net.HttpURLConnection
+import java.net.URL
 
 
 /**
@@ -40,8 +42,6 @@ class ValidatorServiceImpl(
     private val externalData:ExternalData
 ) : ValidatorService {
 
-
-
     private fun checkSafety(url: String):Boolean{
 
         val urlAsked = threatInfoURL(url=url)
@@ -60,6 +60,24 @@ class ValidatorServiceImpl(
         return response.body().toString()=="{}\n"
     }
 
+    private fun checkAvailability(url: String):Boolean{
+        try {
+            val urll = URL(url);
+            val urlc = urll.openConnection() as HttpURLConnection;
+            urlc.setConnectTimeout(10 * 1000);   // 10 s.
+            urlc.connect();
+            if (urlc.getResponseCode() < 400) {  // 200 = "OK" code (http connection is fine).
+                System.out.println("Si" + urlc.getResponseCode())
+                return true && urlValidator.isValid(url);
+            } else {
+                System.out.println("No" + urlc.getResponseCode())
+                return false;
+            }
+        } catch (e : Exception) {
+            return false;
+        }
+    }
+
     companion object {
         val urlValidator = UrlValidator(arrayOf("http", "https"))
     }
@@ -69,12 +87,11 @@ class ValidatorServiceImpl(
             return UrlError.INCORRECT_URL
 
         //checks availability
-
+        if(!checkAvailability(url))
+            return UrlError.NOT_AVAILABLE
         //checks if it is safe
-       if ( !checkSafety(url))
+        if ( !checkSafety(url))
            return UrlError.NOT_SECURE
-
-
 
         //no errors found
         return UrlError.NO_ERROR
