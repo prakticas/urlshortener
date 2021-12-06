@@ -34,12 +34,10 @@ internal class ValidatorServiceImplTest{
     }
 
     @Test
-    @Disabled
     fun `Url is not  available`(){
         val expected = UrlError.NOT_AVAILABLE
-        val actual = testValidatorServiceImpl.isValid("ftp://example.com/")
+        val actual = testValidatorServiceImpl.isValid("http://www.ibetthispagedoesnotexist.com/")
         assertEquals(expected,actual)
-
     }
 
 
