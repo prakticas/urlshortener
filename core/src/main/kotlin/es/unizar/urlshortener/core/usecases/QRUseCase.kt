@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.Async
  */
 interface QRUseCase {
     fun getQR(url: ShortUrl): QRFromUrl
-    @Async
+    @Async("QRExecutor")
     fun createQRAsync(url: ShortUrl, data: QRProperties = QRProperties())
 }
 class QRUseCaseImpl(private val qrRepositoryService: QRRepositoryService,

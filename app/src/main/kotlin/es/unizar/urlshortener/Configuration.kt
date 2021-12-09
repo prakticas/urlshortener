@@ -29,11 +29,11 @@ class ApplicationConfiguration(
     @Autowired val externalData: ExternalData
 ): AsyncConfigurer {
 
-    @Bean(name = ["asynchronousListenerExecutor"])
+    @Bean(name = ["QRExecutor"])
     fun createAsynchronousListenerExecutor(): Executor? {
         val executor = ThreadPoolTaskExecutor()
-        executor.corePoolSize = 10;
-        executor.maxPoolSize = 25;
+        executor.corePoolSize = 3;
+        executor.maxPoolSize = 7;
         executor.setQueueCapacity(100);
         executor.initialize()
         return executor
