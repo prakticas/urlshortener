@@ -13,17 +13,27 @@ import org.springframework.core.io.InputStreamResource
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.ui.Model
+import org.springframework.ui.set
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 import java.io.ByteArrayInputStream
 import java.io.StringWriter
+import java.util.*
 import javax.servlet.http.HttpServletRequest
 
 interface MasiveUrlShortenerController {
-    fun handleFileUpload( file: MultipartFile, request: HttpServletRequest): ResponseEntity<String>
+    fun handleFileUpload(@RequestParam("uuid") id: String, file: MultipartFile, request: HttpServletRequest, listener: ProgressListener): ResponseEntity<String>
 }
+
+interface ProgressListener {
+    fun onProgress(url: String, shortedURL: String, qr: String)
+}
+
 
 /**
  * The implementation of the controller.
@@ -34,11 +44,21 @@ interface MasiveUrlShortenerController {
 class MasiveUrlShortenerControllerImpl(
     val redirectUseCase: RedirectUseCase,
     val logClickUseCase: LogClickUseCase,
+    private val sseRepository: SseRepository,
     val createShortUrlUseCase: CreateShortUrlUseCase)
     :MasiveUrlShortenerController{
 
+    @GetMapping
+    fun index(model: Model): String {
+        model["uuid"] = UUID.randomUUID().toString()
+        return "index"
+    }
+
     @PostMapping("/api/upload")
-    override fun handleFileUpload(file: MultipartFile, request: HttpServletRequest): ResponseEntity<String> {
+    override fun handleFileUpload(@RequestParam("uuid") id: String, file: MultipartFile, request: HttpServletRequest, listener: ProgressListener): ResponseEntity<String> {
+        val listener = sseRepository.createProgressListener(id)
+        val sseEmitter = SseEmitter(Long.MAX_VALUE)
+        sseRepository.put(id, sseEmitter)
         var reader = file.inputStream.reader()
         val csvParser = CSVParser(reader, CSVFormat.DEFAULT.withDelimiter(',') )
         val writer = StringWriter()
@@ -59,7 +79,7 @@ class MasiveUrlShortenerControllerImpl(
                 if (it.url!=null){
                      uri = linkTo<UrlShortenerControllerImpl> { redirectTo(it.url!!.hash, request) }.toUri().toString()
                      qr = if (it.url!!.properties.hasQR == true) linkTo<QRControllerImpl> { redirectTo(it.url!!.hash, request) }.toUri().toString() else ""
-                    origin= it.url!!.redirection.target
+                     origin= it.url!!.redirection.target
 
                 }
                 else{
@@ -68,7 +88,9 @@ class MasiveUrlShortenerControllerImpl(
                     qr=""
                 }
 
+                listener.onProgress(origin, uri, qr)
                 listOf(origin,uri,qr)
+
             }
         lines.forEach{ writer.write(it.joinToString(",", postfix = "\n"))}
 
