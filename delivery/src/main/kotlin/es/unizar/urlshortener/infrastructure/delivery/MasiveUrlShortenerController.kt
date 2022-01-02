@@ -4,12 +4,9 @@ import es.unizar.urlshortener.core.DataCSVIn
 import es.unizar.urlshortener.core.ShortUrlProperties
 import es.unizar.urlshortener.core.usecases.CreateShortUrlUseCase
 import es.unizar.urlshortener.core.usecases.LogClickUseCase
-import es.unizar.urlshortener.core.usecases.QRUseCase
 import es.unizar.urlshortener.core.usecases.RedirectUseCase
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
-import org.apache.commons.csv.CSVRecord
-import org.springframework.core.io.InputStreamResource
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -20,11 +17,12 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
-import java.io.ByteArrayInputStream
 import java.io.StringWriter
 import java.util.*
 import javax.servlet.http.HttpServletRequest
+
 
 interface MasiveUrlShortenerController {
     fun handleFileUpload(@RequestParam("uuid") id: String, file: MultipartFile, request: HttpServletRequest, listener: ProgressListener): ResponseEntity<String>
@@ -49,14 +47,18 @@ class MasiveUrlShortenerControllerImpl(
     :MasiveUrlShortenerController{
 
     @GetMapping
-    fun index(model: Model): String {
+    fun index(model: Model): ModelAndView {
         model["uuid"] = UUID.randomUUID().toString()
-        return "index"
+        val modelAndView = ModelAndView()
+        modelAndView.viewName = "index.html"
+        System.out.println("Pase por aqui")
+        return modelAndView
     }
 
     @PostMapping("/api/upload")
     override fun handleFileUpload(@RequestParam("uuid") id: String, file: MultipartFile, request: HttpServletRequest, listener: ProgressListener): ResponseEntity<String> {
         val listener = sseRepository.createProgressListener(id)
+        System.out.println("Pase por aqui2")
         val sseEmitter = SseEmitter(Long.MAX_VALUE)
         sseRepository.put(id, sseEmitter)
         var reader = file.inputStream.reader()

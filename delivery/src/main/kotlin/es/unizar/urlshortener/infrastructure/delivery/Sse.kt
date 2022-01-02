@@ -31,6 +31,7 @@ class SseController(
     fun progressEvents(@RequestParam("uuid") id: String): SseEmitter {
         val sseEmitter = SseEmitter(Long.MAX_VALUE)
         repository.put(id, sseEmitter)
+        println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
         println("Adding SseEmitter for user: id")
         with(sseEmitter) {
             onCompletion { LOGGER.info("SseEmitter for user id is completed") }
