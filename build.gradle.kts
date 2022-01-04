@@ -38,6 +38,8 @@ subprojects {
         "implementation"("com.google.zxing:zxing-parent:3.4.0")
         "implementation"("com.budiyev.android:code-scanner:2.1.0")
         "testImplementation"("org.mockito:mockito-inline:2.13.0")
+        "implementation"("org.webjars:webjars-locator:0.42")
+        "implementation"("org.webjars.npm:htmx.org:1.6.0")
     }
 }
 
@@ -81,6 +83,8 @@ project(":delivery") {
         "implementation"( "com.google.code.gson:gson:2.8.5")
         "testImplementation"("org.springframework.boot:spring-boot-starter-test")
         "testImplementation"("org.mockito.kotlin:mockito-kotlin:3.2.0")
+        "implementation"("org.webjars:webjars-locator:0.42")
+        "implementation"("org.webjars.npm:htmx.org:1.6.0")
     }
     tasks.getByName<BootJar>("bootJar") {
         enabled = false
@@ -112,5 +116,7 @@ project(":app") {
         "testImplementation"("org.mockito.kotlin:mockito-kotlin:3.2.0")
         "testImplementation"("com.fasterxml.jackson.module:jackson-module-kotlin")
         "testImplementation"("org.apache.httpcomponents:httpclient")
+        "implementation"("org.webjars:webjars-locator:0.42")
+        "implementation"("org.webjars.npm:htmx.org:1.6.0")
     }
 }
