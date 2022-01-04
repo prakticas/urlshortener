@@ -71,11 +71,7 @@ class UrlShortenerControllerImpl(
     val createQRUseCase: QRUseCase
 ) : UrlShortenerController {
 
-    @Autowired
-    private val template: RabbitTemplate? = null
 
-    @Autowired
-    private val exchange: TopicExchange? = null
 
     @GetMapping("/tiny-{id:.*}")
     override fun redirectTo(
@@ -106,7 +102,7 @@ class UrlShortenerControllerImpl(
             //lo devuelvo por create es usado por la word 'it'
         ).let {
 
-            val rpc_reply =  template!!.convertSendAndReceive(exchange!!.name, "rpc", "Hector")  as Boolean
+
             val h = HttpHeaders()
             val url = linkTo<UrlShortenerControllerImpl> { redirectTo(it.hash, request) }.toUri()
             var qr: URI? = null
