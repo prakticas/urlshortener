@@ -13,9 +13,9 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class RabbitConf {
-    val VALIDATION_QUEUE = "validation_queue"
-    val VALIDATION_EXCHANGE = "validation_exchange"
-    val ROUTING_KEY = "validation_key"
+    val VALIDATION_QUEUE = "validation_queue.rpc.requests"
+    val VALIDATION_EXCHANGE = "validation_exchange.rpc"
+    val ROUTING_KEY = "rpc"
 
     @Bean
     fun queue() = Queue(VALIDATION_QUEUE)

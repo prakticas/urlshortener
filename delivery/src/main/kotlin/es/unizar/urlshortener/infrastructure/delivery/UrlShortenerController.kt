@@ -2,23 +2,17 @@ package es.unizar.urlshortener.infrastructure.delivery
 
 import es.unizar.urlshortener.core.*
 import es.unizar.urlshortener.core.usecases.*
-import org.springframework.core.io.InputStreamResource
+import org.springframework.amqp.core.TopicExchange
+import org.springframework.amqp.rabbit.core.RabbitTemplate
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
-import org.springframework.http.MediaType.parseMediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.multipart.MultipartFile
-import java.io.ByteArrayInputStream
 import java.net.URI
 import javax.servlet.http.HttpServletRequest
-import org.apache.commons.csv.CSVFormat
-import org.apache.commons.csv.CSVParser
-import org.springframework.amqp.rabbit.core.RabbitTemplate
-import org.springframework.beans.factory.annotation.Autowired
-import java.io.StringWriter
 
 
 /**
@@ -80,6 +74,9 @@ class UrlShortenerControllerImpl(
     @Autowired
     private val template: RabbitTemplate? = null
 
+    @Autowired
+    private val exchange: TopicExchange? = null
+
     @GetMapping("/tiny-{id:.*}")
     override fun redirectTo(
         @PathVariable id: String,
@@ -108,7 +105,8 @@ class UrlShortenerControllerImpl(
             )
             //lo devuelvo por create es usado por la word 'it'
         ).let {
-            template?.convertAndSend("validation_exchange", "validation_key", "Hector sapo")
+
+            val rpc_reply =  template!!.convertSendAndReceive(exchange!!.name, "rpc", "Hector")  as Boolean
             val h = HttpHeaders()
             val url = linkTo<UrlShortenerControllerImpl> { redirectTo(it.hash, request) }.toUri()
             var qr: URI? = null
