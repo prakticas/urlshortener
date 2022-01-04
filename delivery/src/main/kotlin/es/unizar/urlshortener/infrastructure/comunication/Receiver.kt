@@ -1,4 +1,4 @@
-package es.unizar.urlshortener.infrastructure.delivery
+package es.unizar.urlshortener.infrastructure.comunication
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener
 import org.springframework.stereotype.Component
