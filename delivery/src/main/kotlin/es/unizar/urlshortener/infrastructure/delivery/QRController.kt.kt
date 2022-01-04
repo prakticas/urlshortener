@@ -2,6 +2,7 @@ package es.unizar.urlshortener.infrastructure.delivery
 
 import es.unizar.urlshortener.core.*
 import es.unizar.urlshortener.core.usecases.*
+import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -25,6 +26,7 @@ interface QRController {
 
 }
 @RestController
+@Profile("MainNode")
 class QRControllerImpl(
     val qrUseCase: QRUseCase,
     val redirectUseCase: RedirectUseCase,

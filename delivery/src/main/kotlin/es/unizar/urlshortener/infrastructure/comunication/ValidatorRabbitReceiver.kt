@@ -7,6 +7,7 @@ import es.unizar.urlshortener.core.threatInfoURL
 import org.apache.commons.validator.routines.UrlValidator
 import org.springframework.amqp.rabbit.annotation.RabbitListener
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Profile
 import org.springframework.messaging.handler.annotation.SendTo
 import org.springframework.stereotype.Component
 import java.net.HttpURLConnection
@@ -18,6 +19,7 @@ import java.net.http.HttpResponse
 
 
 @Component
+@Profile("ValidatorReceiver")
 class ExternalData{
     @Value("\${apiKey}")
     lateinit var  apiKey :String
@@ -28,6 +30,7 @@ class ExternalData{
 }
 
 @Component
+@Profile("ValidatorReceiver")
 class Receiver(
     private val externalData:ExternalData){
 

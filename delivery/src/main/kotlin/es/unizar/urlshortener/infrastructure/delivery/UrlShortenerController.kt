@@ -5,6 +5,7 @@ import es.unizar.urlshortener.core.usecases.*
 import org.springframework.amqp.core.TopicExchange
 import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Profile
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -64,6 +65,7 @@ data class ShortUrlDataOut(
  * **Note**: Spring Boot is able to discover this [RestController] without further configuration.
  */
 @RestController
+@Profile("MainNode")
 class UrlShortenerControllerImpl(
     val redirectUseCase: RedirectUseCase,
     val logClickUseCase: LogClickUseCase,
