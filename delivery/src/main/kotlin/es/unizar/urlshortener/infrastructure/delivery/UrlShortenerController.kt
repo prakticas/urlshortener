@@ -16,6 +16,8 @@ import java.net.URI
 import javax.servlet.http.HttpServletRequest
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
+import org.springframework.amqp.rabbit.core.RabbitTemplate
+import org.springframework.beans.factory.annotation.Autowired
 import java.io.StringWriter
 
 
@@ -75,12 +77,17 @@ class UrlShortenerControllerImpl(
     val createQRUseCase: QRUseCase
 ) : UrlShortenerController {
 
+    @Autowired
+    private val template: RabbitTemplate? = null
+
     @GetMapping("/tiny-{id:.*}")
     override fun redirectTo(
         @PathVariable id: String,
         request: HttpServletRequest
     ): ResponseEntity<Void> =
         redirectUseCase.redirectTo(id).let {
+            //Encolar tarea generación QRCODE usando RabbitMQ
+
             logClickUseCase.logClick(id, ClickProperties(ip = request.remoteAddr))
             val h = HttpHeaders()
             h.location = URI.create(it.redirection.target)
@@ -101,6 +108,7 @@ class UrlShortenerControllerImpl(
             )
             //lo devuelvo por create es usado por la word 'it'
         ).let {
+            template?.convertAndSend("validation_exchange", "validation_key", "Hector sapo")
             val h = HttpHeaders()
             val url = linkTo<UrlShortenerControllerImpl> { redirectTo(it.hash, request) }.toUri()
             var qr: URI? = null
