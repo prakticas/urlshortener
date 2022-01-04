@@ -74,6 +74,8 @@ class Receiver(
     @SendTo("validation_queue.rpc.replies")
     fun receiveMessage(url: String): UrlError {
 
+        println("Nodo  comprobando la URL $url")
+
         //checks the format
         if(!urlValidator.isValid(url))
             return UrlError.INCORRECT_URL

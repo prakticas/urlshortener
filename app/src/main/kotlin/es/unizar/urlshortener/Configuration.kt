@@ -1,7 +1,7 @@
 package es.unizar.urlshortener
 
 import es.unizar.urlshortener.core.usecases.*
-import es.unizar.urlshortener.infrastructure.delivery.ExternalData
+import es.unizar.urlshortener.infrastructure.comunication.ExternalData
 import es.unizar.urlshortener.infrastructure.delivery.HashServiceImpl
 import es.unizar.urlshortener.infrastructure.delivery.QRServiceImpl
 import es.unizar.urlshortener.infrastructure.delivery.ValidatorServiceImpl
@@ -49,7 +49,7 @@ class ApplicationConfiguration(
     fun qrRepositoryService() = QRRepositoryServiceImpl(qrEntityRepository)
 
     @Bean
-    fun validatorService() = ValidatorServiceImpl(externalData)
+    fun validatorService() = ValidatorServiceImpl()
 
     @Bean
     fun hashService() = HashServiceImpl()
