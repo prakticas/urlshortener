@@ -40,54 +40,36 @@ $(document).ready(
         $("#shortenerCSV").submit(
             function(event) {
                 event.preventDefault();
-                const fd = new FormData();
-                const files = $('#csv-input')[0].files;
-                // Check file selected or not
-                if(files.length > 0 ) {
-                    fd.append('file', files[0]);
-                    $.ajax({
-                        type: "POST",
-                        url: "/api/upload",
-                        processData: false,
-                        contentType: false,
-                        data: fd,
-                        success: function (file) {
-                            $("#table-results").show()
-                            $("#result").html("")
-                            $("#table-results tbody").empty()
-                            let fileList = csvToArray(file)
-                            fileList.map(({url, shortUrl, qr}) => {
-                                    $("#table-results").append("<tr>\n" +
-                                        "                    <th scope=\"row\">" +
-                                        "                       <div class='alert alert-info lead'>" +
-                                        "                           <a target='_blank' href='" + url + "'>" + url + "</a>" +
-                                        "                       </div>" +
-                                        "                    </th>\n" +
-                                        "                    <td>" +
-                                        ((!checkIfError(shortUrl)) ?
-                                            ("<div class='alert alert-success lead'>" +
-                                                "<a target='_blank' href='" + shortUrl + "'>" + shortUrl + "</a>" +
-                                                "</div>")
-                                            : ("<div class='alert alert-danger lead'>" +
-                                                "<span>" + shortUrl + "</span>" +
-                                                "</div>")) +
-                                        "                   </td>\n" +
-                                        "                   <td>"+
-                                        ((qr !== "") ?
-                                            ("<div class='alert alert-success lead'>" +
-                                                "<a target='_blank' href='" + qr + "'>" + qr + "</a>" +
-                                            "</div>")
-                                            : "") +
-                                        "                   </td>\n" +
-                                        "                </tr>")
-                            })
-                        },
-                        error: function () {
-                            $("#result").html(
-                                "<div class='alert alert-danger lead'>ERROR</div>");
+                $("#table-results").show()
+                $("#result").html("")
+                $("#table-results tbody").empty()
+                var last_response_len = false;
+                $.ajax({
+                    type: "POST",
+                    url: "/api/upload",
+                    processData: false,
+                    contentType: false,
+                    data: loadCSV(),
+                    xhrFields: {
+                        onprogress: function (e) {
+                            /* Callback when new event arrives */
+                            let this_response, response = e.currentTarget.response;
+                            // Extract last element of the events list
+                            if (last_response_len === false) {
+                                this_response = response;
+                                last_response_len = response.length;
+                            } else {
+                                this_response = response.substring(last_response_len);
+                                last_response_len = response.length;
+                            }
+                            // Get event parameters and update GUI with results
+                            setResultRow(this_response.split(","))
                         }
+                    }
+                }, { dataType: "text" }) //<== this is important for JSON data
+                    .fail(function (data) {
+                        $("#result").html("<div class='alert alert-danger lead'>ERROR</div>")
                     });
-                }
             });
     });
 
@@ -105,4 +87,37 @@ const csvToArray = (str, delimiter = ",")  => {
 }
 const checkIfError = (url) => {
     return !RegExp('^http').test(url)
+}
+
+const setResultRow = ([url, shortUrl, qr]) => {
+    $("#table-results").append("<tr>\n" +
+        "                    <th scope=\"row\">" +
+        "                       <div class='alert alert-info lead'>" +
+        "                           <a target='_blank' href='" + url + "'>" + url + "</a>" +
+        "                       </div>" +
+        "                    </th>\n" +
+        "                    <td>" +
+        ((!checkIfError(shortUrl)) ?
+            ("<div class='alert alert-success lead'>" +
+                "<a target='_blank' href='" + shortUrl + "'>" + shortUrl + "</a>" +
+                "</div>")
+            : ("<div class='alert alert-danger lead'>" +
+                "<span>" + shortUrl + "</span>" +
+                "</div>")) +
+        "                   </td>\n" +
+        "                   <td>"+
+        ((qr !== "") ?
+            ("<div class='alert alert-success lead'>" +
+                "<a target='_blank' href='" + qr + "'>" + qr + "</a>" +
+                "</div>")
+            : "") +
+        "                   </td>\n" +
+        "                </tr>")
+}
+
+const loadCSV = () => {
+    const fd = new FormData();
+    const files = $('#csv-input')[0].files;
+    fd.append('file', files[0]);
+    return fd
 }

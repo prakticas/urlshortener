@@ -37,6 +37,8 @@ subprojects {
         // https://mvnrepository.com/artifact/com.google.zxing/zxing-parent
         "implementation"("com.google.zxing:zxing-parent:3.4.0")
         "implementation"("com.budiyev.android:code-scanner:2.1.0")
+        "implementation"("org.webjars.npm:htmx.org:1.6.0")
+        "implementation"("org.springframework.boot:spring-boot-starter-webflux")
         "testImplementation"("org.mockito:mockito-inline:2.13.0")
     }
 }
