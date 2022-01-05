@@ -10,7 +10,6 @@ import org.springframework.web.servlet.ModelAndView
 import java.util.*
 
 @Controller
-@RequestMapping("/")
 class InitIndex {
     @GetMapping
     fun index(model: Model): String {

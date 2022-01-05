@@ -72,7 +72,7 @@
 </div>
 <h1>Server-Sent Events Demo</h1>
 <div hx-sse="" th:attr="hx-sse='connect:/progress-events?uuid='+${uuid}">
-    <button hx-include="[name='uuid']" hx-post="/" hx-swap="none">
+    <button hx-include="[name='uuid']" hx-post="/si" hx-swap="none">
         Generate PDF
     </button>
     <input name="uuid" th:attr="value=${uuid}" type="hidden" value="" />

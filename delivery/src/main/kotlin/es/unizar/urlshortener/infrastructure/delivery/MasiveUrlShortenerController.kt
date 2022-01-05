@@ -44,17 +44,7 @@ class MasiveUrlShortenerControllerImpl(
         val createShortUrlUseCase: CreateShortUrlUseCase)
     :MasiveUrlShortenerController{
 
-    /*
-    @GetMapping
-    fun index(model: Model): ModelAndView {
-        model["uuid"] = UUID.randomUUID().toString()
-        val modelAndView = ModelAndView()
-        modelAndView.viewName = "index.html"
-        System.out.println("Pase por aqui")
-        return modelAndView
-    }*/
-
-    @PostMapping
+    @PostMapping("/si")
     fun generatePdf(@RequestParam("uuid") id: String): ModelAndView {
         val listener = sseRepository.createProgressListener(id)
         pdfGenerator.generatePdf(id, listener)

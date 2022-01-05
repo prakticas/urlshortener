@@ -76,6 +76,8 @@ project(":delivery") {
     dependencies {
         "implementation"(project(":core"))
         "implementation"("org.springframework.boot:spring-boot-starter-thymeleaf")
+        "implementation"("org.webjars:jquery:2.1.4")
+        "implementation"( "org.webjars:bootstrap:3.3.5")
         "implementation" ("org.apache.commons:commons-csv:1.5")
         "implementation"("org.springframework.boot:spring-boot-starter-hateoas")
         "implementation"("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -83,6 +85,7 @@ project(":delivery") {
         "implementation"("com.google.guava:guava:23.0")
         "implementation"( "com.google.code.gson:gson:2.8.5")
         "testImplementation"("org.springframework.boot:spring-boot-starter-test")
+        "testImplementation"("org.springframework.boot:spring-boot-starter-jdbc")
         "testImplementation"("org.mockito.kotlin:mockito-kotlin:3.2.0")
         "implementation"("org.webjars:webjars-locator:0.42")
         "implementation"("org.webjars.npm:htmx.org:1.6.0")
