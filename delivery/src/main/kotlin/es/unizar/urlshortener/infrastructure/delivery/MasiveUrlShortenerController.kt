@@ -15,12 +15,10 @@ import org.springframework.core.io.InputStreamResource
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.ui.set
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.servlet.ModelAndView
 import java.io.ByteArrayInputStream
@@ -46,6 +44,7 @@ class MasiveUrlShortenerControllerImpl(
         val createShortUrlUseCase: CreateShortUrlUseCase)
     :MasiveUrlShortenerController{
 
+    /*
     @GetMapping
     fun index(model: Model): ModelAndView {
         model["uuid"] = UUID.randomUUID().toString()
@@ -53,7 +52,7 @@ class MasiveUrlShortenerControllerImpl(
         modelAndView.viewName = "index.html"
         System.out.println("Pase por aqui")
         return modelAndView
-    }
+    }*/
 
     @PostMapping
     fun generatePdf(@RequestParam("uuid") id: String): ModelAndView {

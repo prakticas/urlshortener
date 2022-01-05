@@ -75,6 +75,7 @@ project(":delivery") {
     apply(plugin = "io.spring.dependency-management")
     dependencies {
         "implementation"(project(":core"))
+        "implementation"("org.springframework.boot:spring-boot-starter-thymeleaf")
         "implementation" ("org.apache.commons:commons-csv:1.5")
         "implementation"("org.springframework.boot:spring-boot-starter-hateoas")
         "implementation"("com.fasterxml.jackson.module:jackson-module-kotlin")

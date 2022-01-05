@@ -1,0 +1,11 @@
+# Spring Datasource
+spring:
+  profiles:
+    active: locale
+  datasource:
+    url: jdbc:hsqldb:mem:.
+    username: sa
+    password:
+    driverClassName: org.hsqldb.jdbc.JDBCDriver
+  jpa:
+    open-in-view: false
