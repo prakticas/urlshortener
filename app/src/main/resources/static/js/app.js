@@ -63,7 +63,12 @@ $(document).ready(
                                 last_response_len = response.length;
                             }
                             // Get event parameters and update GUI with results
-                            setResultRow(this_response.split(","))
+                            if (this_response.substr(0, 5) == 'data:') {
+                                this_response = this_response.replace(/data:/g, '');
+                            }
+                            if(this_response.length > 1) {
+                                setResultRow(this_response.split(","))
+                            }
                         }
                     }
                 }, { dataType: "text" }) //<== this is important for JSON data
