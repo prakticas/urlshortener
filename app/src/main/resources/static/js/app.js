@@ -73,18 +73,6 @@ $(document).ready(
             });
     });
 
-const csvToArray = (str, delimiter = ",")  => {
-    const headers = ["url", "shortUrl", "qr"]
-    const rows = str.split("\n")
-    rows.pop()
-    return rows.map(function (row) {
-        const values = row.split(delimiter);
-        return headers.reduce(function (object, header, index) {
-            object[header] = values[index];
-            return object;
-        }, {});
-    });
-}
 const checkIfError = (url) => {
     return !RegExp('^http').test(url)
 }
