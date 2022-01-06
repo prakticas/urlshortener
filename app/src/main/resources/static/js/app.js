@@ -49,21 +49,19 @@ $(document).ready(
                     url: "/api/upload",
                     processData: false,
                     contentType: false,
+                    async: true,
                     data: loadCSV(),
                     xhrFields: {
                         onprogress: function (e) {
                             /* Callback when new event arrives */
-                            let this_response, response = e.currentTarget.response;
-                            // Extract last element of the events list
-                            if (last_response_len === false) {
-                                this_response = response;
-                                last_response_len = response.length;
-                            } else {
-                                this_response = response.substring(last_response_len);
-                                last_response_len = response.length;
-                            }
+                            const response = e.currentTarget.response;
+                            console.log(response)
+                            const this_response = response.split("\n\n")
+                            console.log(this_response)
                             // Get event parameters and update GUI with results
-                            setResultRow(this_response.split(","))
+                            this_response.map(e => {
+                                setResultRow(e.split(","))
+                            })
                         }
                     }
                 }, { dataType: "text" }) //<== this is important for JSON data

@@ -10,6 +10,7 @@ import org.apache.commons.csv.CSVParser
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.scheduling.annotation.Async
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import reactor.core.publisher.Flux
@@ -41,29 +42,29 @@ class MasiveUrlShortenerControllerImpl(
             val csvParser = CSVParser(reader, CSVFormat.DEFAULT.withDelimiter(',') )
             csvParser
                 .map{DataCSVIn(url=it.get(0), qr= it.get(1))}
-                .map{
-                    createShortUrlUseCase.createWithError(url=it.url,data =ShortUrlProperties(
+                .map{ dataCSVIn ->
+                    createShortUrlUseCase.createWithError(url=dataCSVIn.url,data =ShortUrlProperties(
                         ip = request.remoteAddr,
-                        hasQR=it.hasQR()
-                    ))}
-                .map{
-                    val uri:String
-                    val qr:String
-                    val origin:String
-                    if (it.url!=null){
-                        uri = linkTo<UrlShortenerControllerImpl> { redirectTo(it.url!!.hash, request) }.toUri().toString()
-                        qr = if (it.url!!.properties.hasQR == true) linkTo<QRControllerImpl> { redirectTo(it.url!!.hash, request) }.toUri().toString() else ""
-                        origin= it.url!!.redirection.target
+                        hasQR=dataCSVIn.hasQR()
+                    )).let {
+                        val uri:String
+                        val qr:String
+                        val origin:String
+                        if (it.url != null){
+                            uri = linkTo<UrlShortenerControllerImpl> { redirectTo(it.url!!.hash, request) }.toUri().toString()
+                            qr = if (it.url!!.properties.hasQR == true) linkTo<QRControllerImpl> { redirectTo(it.url!!.hash, request) }.toUri().toString() else ""
+                            origin= it.url!!.redirection.target
 
+                        }
+                        else{
+                            origin=it.origin
+                            uri=it.error.msg
+                            qr=""
+                        }
+                        fluxSink.next("$origin,$uri,$qr")
                     }
-                    else{
-                        origin=it.origin
-                        uri=it.error.msg
-                        qr=""
-                    }
-                    fluxSink.next("$origin,$uri,$qr")
                 }
             fluxSink.complete()
-        }.delayElements(Duration.ofMillis(100))
+        }.delayElements(Duration.ofMillis(50))
     }
 }
