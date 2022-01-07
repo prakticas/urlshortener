@@ -45,6 +45,8 @@ $(document).ready(
                 $("#result").html("")
                 $("#table-results tbody").empty()
                 // Upload file
+                const data = loadCSV()
+                if (!data) return
                 $.ajax({
                     type: "POST",
                     url: "/api/upload",
@@ -99,6 +101,7 @@ const setResultRow = ([url, shortUrl, qr]) => {
 const loadCSV = () => {
     const fd = new FormData();
     const files = $('#csv-input')[0].files;
+    if (files.length === 0) return null
     fd.append('file', files[0]);
     return fd
 }
