@@ -8,19 +8,20 @@ import es.unizar.urlshortener.core.usecases.RedirectUseCase
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import org.springframework.hateoas.server.mvc.linkTo
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.scheduling.annotation.Async
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
-import reactor.core.publisher.Flux
-import java.io.StringWriter
-import java.time.Duration
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 import javax.servlet.http.HttpServletRequest
 
 
 interface MasiveUrlShortenerController {
-    fun handleFileUpload( file: MultipartFile, request: HttpServletRequest): Flux<String>
+    fun handleFileUpload( file: MultipartFile, request: HttpServletRequest): ResponseEntity<Void>
 }
 
 /**
@@ -35,15 +36,23 @@ class MasiveUrlShortenerControllerImpl(
     val createShortUrlUseCase: CreateShortUrlUseCase)
     :MasiveUrlShortenerController{
 
-    @PostMapping(path = ["/api/upload"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
-    override fun handleFileUpload(file: MultipartFile, request: HttpServletRequest): Flux<String> {
-        return Flux.create<String?> { fluxSink ->
+    private var emitter: SseEmitter? = null
+
+    /// Inits sse connection and catches event from [handleFileUpload] thread and send to client
+    @GetMapping(path = ["/fetchShortUrlList"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
+    fun createConnection(): SseEmitter? {
+        emitter = SseEmitter()
+        return emitter
+    }
+
+    @PostMapping(path = ["/api/upload"])
+    override fun handleFileUpload(file: MultipartFile, request: HttpServletRequest): ResponseEntity<Void> {
             val reader = file.inputStream.reader()
             val csvParser = CSVParser(reader, CSVFormat.DEFAULT.withDelimiter(',') )
             csvParser
-                .map{DataCSVIn(url=it.get(0), qr= it.get(1))}
+                .map{DataCSVIn(url = it.get(0), qr = it.get(1))}
                 .map{ dataCSVIn ->
-                    createShortUrlUseCase.createWithError(url=dataCSVIn.url,data =ShortUrlProperties(
+                    createShortUrlUseCase.createWithError(url=dataCSVIn.url,data = ShortUrlProperties(
                         ip = request.remoteAddr,
                         hasQR=dataCSVIn.hasQR()
                     )).let {
@@ -61,10 +70,16 @@ class MasiveUrlShortenerControllerImpl(
                             uri=it.error.msg
                             qr=""
                         }
-                        fluxSink.next("$origin,$uri,$qr")
+                        // Send event from this thread to [createConnection] thread
+                        try {
+                            emitter!!.send("$origin,$uri,$qr")
+                        } catch (e: Exception) {
+                            emitter!!.completeWithError(e)
+                        }
                     }
                 }
-            fluxSink.complete()
-        }.delayElements(Duration.ofMillis(50))
+        // Stop sending events to client
+        emitter!!.complete()
+        return ResponseEntity(HttpHeaders(), HttpStatus.PROCESSING)
     }
 }

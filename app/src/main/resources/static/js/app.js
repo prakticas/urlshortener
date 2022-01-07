@@ -2,7 +2,7 @@ $(document).ready(
     function() {
         $("#shortener").submit(
             function(event) {
-                var withQR = $("#qr-switch").is(":checked")
+                const withQR = $("#qr-switch").is(":checked");
                 event.preventDefault();
                 $.ajax({
                     type : "POST",
@@ -40,49 +40,32 @@ $(document).ready(
         $("#shortenerCSV").submit(
             function(event) {
                 event.preventDefault();
+                // Empty results table and show it
                 $("#table-results").show()
                 $("#result").html("")
                 $("#table-results tbody").empty()
-                var last_response_len = false;
+                // Upload file
                 $.ajax({
                     type: "POST",
                     url: "/api/upload",
                     processData: false,
                     contentType: false,
                     async: true,
-                    data: loadCSV(),
-                    xhrFields: {
-                        onprogress: function (e) {
-                            /* Callback when new event arrives */
-                            const response = e.currentTarget.response;
-                            console.log(response)
-                            const this_response = response.split("\n\n")
-                            console.log(this_response)
-                            // Get event parameters and update GUI with results
-                            this_response.map(e => {
-                                setResultRow(e.split(","))
-                            })
-                        }
-                    }
-                }, { dataType: "text" }) //<== this is important for JSON data
+                    data: loadCSV()
+                })
                     .fail(function (data) {
                         $("#result").html("<div class='alert alert-danger lead'>ERROR</div>")
                     });
+
+                // Wait for server events (shortUrls)
+                const receiver = new EventSource('/fetchShortUrlList')
+                receiver.onmessage = function (e) {
+                    setResultRow(e.data.split(','))
+                }
+
             });
     });
 
-const csvToArray = (str, delimiter = ",")  => {
-    const headers = ["url", "shortUrl", "qr"]
-    const rows = str.split("\n")
-    rows.pop()
-    return rows.map(function (row) {
-        const values = row.split(delimiter);
-        return headers.reduce(function (object, header, index) {
-            object[header] = values[index];
-            return object;
-        }, {});
-    });
-}
 const checkIfError = (url) => {
     return !RegExp('^http').test(url)
 }
