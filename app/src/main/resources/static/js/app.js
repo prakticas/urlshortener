@@ -16,8 +16,8 @@ $(document).ready(
                         setResultRow(data)
                     },
                     error : function(xhr) {
-                        let err = JSON.parse(xhr.responseText)
-                        showError(err.message)
+                        let err = JSON.parse(xhr.responseText).message
+                        showError(err)
                     }
                 });
             });
@@ -29,6 +29,7 @@ $(document).ready(
                 $("#table-results").show()
                 $("#result").html("")
                 $("#table-results tbody").empty()
+                $("#csv-button").prop("disabled", true)
                 // Upload file
                 const data = loadCSV()
                 if (!data) return
@@ -38,16 +39,27 @@ $(document).ready(
                     processData: false,
                     contentType: false,
                     async: true,
-                    data: data
+                    data: data,
+                    error : function(xhr) {
+                        $("#csv-button").prop("disabled", false)
+                        let err = JSON.parse(xhr.responseText).message
+                        showError(err)
+                    }
                 })
-                    .fail(function (data) {
-                        showError("ERROR")
-                    });
 
                 // Wait for server events (shortUrls)
                 const receiver = new EventSource('/fetchShortUrlList')
                 receiver.onmessage = function (e) {
+                    // Stream events finished
+                    if (e.data === "-end-") {
+                        receiver.close()
+                        $("#csv-button").prop("disabled", false)
+                        return
+                    }
                     setResultRowEvent(e.data.split(','))
+                }
+                receiver.onerror = function (_) {
+                    showError("Error fetching csv shorted urls")
                 }
             });
     });

@@ -78,7 +78,12 @@ class MasiveUrlShortenerControllerImpl(
                     }
                 }
         // Stop sending events to client
-        emitter!!.complete()
+        try {
+            emitter!!.send("-end-")
+            emitter!!.complete()
+        } catch (e: Exception) {
+            emitter!!.completeWithError(e)
+        }
         return ResponseEntity(HttpHeaders(), HttpStatus.PROCESSING)
     }
 }
