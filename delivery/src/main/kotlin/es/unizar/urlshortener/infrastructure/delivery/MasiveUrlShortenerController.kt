@@ -41,7 +41,7 @@ class MasiveUrlShortenerControllerImpl(
     /// Inits sse connection and catches event from [handleFileUpload] thread and send to client
     @GetMapping(path = ["/fetchShortUrlList"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
     fun createConnection(): SseEmitter? {
-        emitter = SseEmitter()
+        emitter = SseEmitter(Long.MAX_VALUE)
         return emitter
     }
 
