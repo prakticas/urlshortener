@@ -1,5 +1,6 @@
 package es.unizar.urlshortener.infrastructure.delivery
 
+import es.unizar.urlshortener.core.ClickProperties
 import es.unizar.urlshortener.core.DataCSVIn
 import es.unizar.urlshortener.core.ShortUrlProperties
 import es.unizar.urlshortener.core.usecases.CreateShortUrlUseCase
@@ -31,7 +32,6 @@ interface MasiveUrlShortenerController {
  */
 @RestController
 class MasiveUrlShortenerControllerImpl(
-    val redirectUseCase: RedirectUseCase,
     val logClickUseCase: LogClickUseCase,
     val createShortUrlUseCase: CreateShortUrlUseCase)
     :MasiveUrlShortenerController{
@@ -48,27 +48,26 @@ class MasiveUrlShortenerControllerImpl(
     @PostMapping(path = ["/api/upload"])
     override fun handleFileUpload(file: MultipartFile, request: HttpServletRequest): ResponseEntity<Void> {
             val reader = file.inputStream.reader()
-            val csvParser = CSVParser(reader, CSVFormat.DEFAULT.withDelimiter(',') )
+            val csvParser = CSVParser(reader, CSVFormat.DEFAULT.withDelimiter(','))
             csvParser
                 .map{DataCSVIn(url = it.get(0), qr = it.get(1))}
                 .map{ dataCSVIn ->
-                    createShortUrlUseCase.createWithError(url=dataCSVIn.url,data = ShortUrlProperties(
+                    createShortUrlUseCase.createWithError(url = dataCSVIn.url, data = ShortUrlProperties(
                         ip = request.remoteAddr,
-                        hasQR=dataCSVIn.hasQR()
+                        hasQR = dataCSVIn.hasQR()
                     )).let {
-                        val uri:String
-                        val qr:String
-                        val origin:String
+                        val uri: String
+                        var qr = ""
+                        val origin: String
                         if (it.url != null){
                             uri = linkTo<UrlShortenerControllerImpl> { redirectTo(it.url!!.hash, request) }.toUri().toString()
-                            qr = if (it.url!!.properties.hasQR == true) linkTo<QRControllerImpl> { redirectTo(it.url!!.hash, request) }.toUri().toString() else ""
-                            origin= it.url!!.redirection.target
-
+                            qr = if (it.url!!.properties.hasQR == true)
+                                linkTo<QRControllerImpl> { redirectTo(it.url!!.hash, request) }.toUri().toString() else ""
+                            origin = it.url!!.redirection.target
                         }
                         else{
-                            origin=it.origin
-                            uri=it.error.msg
-                            qr=""
+                            origin = it.origin
+                            uri = it.error.msg
                         }
                         // Send event from this thread to [createConnection] thread
                         try {

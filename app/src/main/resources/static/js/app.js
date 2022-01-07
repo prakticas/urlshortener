@@ -2,8 +2,8 @@ $(document).ready(
     function() {
         $("#shortener").submit(
             function(event) {
-                const withQR = $("#qr-switch").is(":checked");
                 event.preventDefault();
+                const withQR = $("#qr-switch").is(":checked");
                 $.ajax({
                     type : "POST",
                     url : "/api/link",
@@ -13,26 +13,11 @@ $(document).ready(
                     } ,
                     success : function(data) {
                         $("#table-results").hide()
-                        $("#result").html(
-                            "<div class='alert alert-success lead'><a target='_blank' href='"
-                            + data.url
-                            + "'>"
-                            + data.url
-                            + "</a></div>");
-
-                        if (data.qr != null){
-                            $("#result").prepend(
-                                "<div class='alert alert-success lead'><a target='_blank' href='"
-                                + data.qr
-                                + "'>"
-                                + data.qr
-                                + "</a></div>");
-                        }
+                        setResultRow(data)
                     },
                     error : function(xhr) {
                         let err = JSON.parse(xhr.responseText)
-                        $("#result").html(
-                            "<div class='alert alert-danger lead'>" + err.message + "</div>");
+                        showError(err.message)
                     }
                 });
             });
@@ -53,26 +38,31 @@ $(document).ready(
                     processData: false,
                     contentType: false,
                     async: true,
-                    data: loadCSV()
+                    data: data
                 })
                     .fail(function (data) {
-                        $("#result").html("<div class='alert alert-danger lead'>ERROR</div>")
+                        showError("ERROR")
                     });
 
                 // Wait for server events (shortUrls)
                 const receiver = new EventSource('/fetchShortUrlList')
                 receiver.onmessage = function (e) {
-                    setResultRow(e.data.split(','))
+                    setResultRowEvent(e.data.split(','))
                 }
-
             });
     });
 
-const checkIfError = (url) => {
-    return !RegExp('^http').test(url)
+const setResultRow = ({url, qr}) => {
+    $("#result").html(
+        `<div class='alert alert-success lead'><a target='_blank' href='${url}'>${url}</a></div>`);
+
+    if (qr != null){
+        $("#result").html(
+            `<div class='alert alert-success lead'><a target='_blank' href='${qr}'>${qr}</a></div>`);
+    }
 }
 
-const setResultRow = ([url, shortUrl, qr]) => {
+const setResultRowEvent = ([url, shortUrl, qr]) => {
     $("#table-results").append("<tr>\n" +
         "                    <th scope=\"row\">" +
         "                       <div class='alert alert-info lead'>" +
@@ -98,10 +88,18 @@ const setResultRow = ([url, shortUrl, qr]) => {
         "                </tr>")
 }
 
+const checkIfError = (url) => {
+    return !RegExp('^http').test(url)
+}
+
 const loadCSV = () => {
     const fd = new FormData();
     const files = $('#csv-input')[0].files;
     if (files.length === 0) return null
     fd.append('file', files[0]);
     return fd
+}
+
+const showError = (err) => {
+    $("#result").html(`<div class='alert alert-danger lead'>${err}</div>`)
 }
