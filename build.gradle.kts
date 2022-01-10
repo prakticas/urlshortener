@@ -79,7 +79,9 @@ project(":delivery") {
         "implementation"("commons-validator:commons-validator:1.6")
         "implementation"("com.google.guava:guava:23.0")
         "implementation"( "com.google.code.gson:gson:2.8.5")
+        "implementation"("org.springframework.boot:spring-boot-starter-amqp")
         "testImplementation"("org.springframework.boot:spring-boot-starter-test")
+        "testImplementation"("org.springframework.amqp:spring-rabbit-test")
         "testImplementation"("org.mockito.kotlin:mockito-kotlin:3.2.0")
     }
     tasks.getByName<BootJar>("bootJar") {
@@ -106,6 +108,7 @@ project(":app") {
         // https://mvnrepository.com/artifact/com.google.zxing/zxing-parent
         "implementation"("com.google.zxing:zxing-parent:3.4.0")
         "implementation"("com.budiyev.android:code-scanner:2.1.0")
+        "implementation"("org.springframework.boot:spring-boot-starter-amqp")
         "testImplementation"("org.springframework.boot:spring-boot-starter-test")
         "testImplementation"("org.springframework.boot:spring-boot-starter-web")
         "testImplementation"("org.springframework.boot:spring-boot-starter-jdbc")

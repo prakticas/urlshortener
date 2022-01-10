@@ -19,6 +19,10 @@ import java.net.URLConnection
 import java.net.URL
 import java.nio.charset.StandardCharsets
 import com.google.gson.Gson
+import es.unizar.urlshortener.infrastructure.comunication.ValidatorRabbitSender
+import org.springframework.amqp.core.TopicExchange
+import org.springframework.amqp.rabbit.core.RabbitTemplate
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.PropertySource
 import org.springframework.stereotype.Component
@@ -29,72 +33,21 @@ import org.springframework.stereotype.Component
  * Implementation of the port [ValidatorService].
  */
 
-@Component
-class ExternalData{
-    @Value("\${apiKey}")
-    lateinit var  apiKey :String
-    fun apiKey():String= apiKey
 
 
 
-}
+class ValidatorServiceImpl : ValidatorService {
+
+    @Autowired
+    private val template: RabbitTemplate? = null
+
+    @Autowired
+    private val exchange: TopicExchange? = null
 
 
-class ValidatorServiceImpl(
-    private val externalData:ExternalData
-) : ValidatorService {
-
-    private fun checkSafety(url: String):Boolean{
-
-        val urlAsked = threatInfoURL(url=url)
-        val body = threatInfo( threatEntries = arrayOf(urlAsked))
-        val threatInfoRqt = Gson().toJson(body)
-        val requestBody = "{threatInfo: $threatInfoRqt}"
-
-        val ak = externalData.apiKey()
-        val client = HttpClient.newBuilder().build();
-        val request = HttpRequest.newBuilder()
-            .uri(URI.create("https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${externalData.apiKey()}"))
-            .POST(HttpRequest.BodyPublishers.ofString(requestBody))
-            .build()
-
-        val response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        return response.body().toString()=="{}\n"
-    }
-
-    private fun checkAvailability(url: String):Boolean{
-        try {
-            val urll = URL(url);
-            val urlc = urll.openConnection() as HttpURLConnection;
-            urlc.setConnectTimeout(10 * 1000);   // 10 s.
-            urlc.connect();
-            if (urlc.getResponseCode() < 400) {  // 200 = "OK" code (http connection is fine).
-                return true && urlValidator.isValid(url);
-            } else {
-                return false;
-            }
-        } catch (e : Exception) {
-            return false;
-        }
-    }
-
-    companion object {
-        val urlValidator = UrlValidator(arrayOf("http", "https"))
-    }
     override fun isValid(url: String) : UrlError{
-        //checks the format
-        if(!urlValidator.isValid(url))
-            return UrlError.INCORRECT_URL
-
-        //checks availability
-        if(!checkAvailability(url))
-            return UrlError.NOT_AVAILABLE
-        //checks if it is safe
-        if ( !checkSafety(url))
-           return UrlError.NOT_SECURE
-
-        //no errors found
-        return UrlError.NO_ERROR
+        val res = ValidatorRabbitSender(template!!, exchange!! ).validate(url)
+       return res
     }
 
 

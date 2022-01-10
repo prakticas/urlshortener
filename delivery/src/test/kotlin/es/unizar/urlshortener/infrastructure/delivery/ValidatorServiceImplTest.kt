@@ -12,11 +12,10 @@ import org.springframework.test.context.TestPropertySource
 
 @Configuration
 internal class ValidatorServiceImplConfig {
-    @Bean
-    fun externalData(): ExternalData = ExternalData()
+
 
     @Bean
-    fun testValidatorServiceImpl(): ValidatorServiceImpl = ValidatorServiceImpl(externalData())
+    fun testValidatorServiceImpl(): ValidatorServiceImpl = ValidatorServiceImpl()
 }
 
 

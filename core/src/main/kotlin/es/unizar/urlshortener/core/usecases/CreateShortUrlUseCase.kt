@@ -1,6 +1,7 @@
 package es.unizar.urlshortener.core.usecases
 
 import es.unizar.urlshortener.core.*
+import org.springframework.beans.factory.annotation.Autowired
 import java.util.Date
 
 /**
@@ -22,6 +23,8 @@ class CreateShortUrlUseCaseImpl(
     private val validatorService: ValidatorService,
     private val hashService: HashService
 ) : CreateShortUrlUseCase {
+
+
     override fun create(url: String, data: ShortUrlProperties): ShortUrl =
         if (validatorService.isValid(url)==UrlError.NO_ERROR) {
             val id: String = hashService.hasUrl(url)
@@ -42,6 +45,7 @@ class CreateShortUrlUseCaseImpl(
 
     override fun createWithError(url: String, data: ShortUrlProperties): ShortUrlWithError {
         val err = validatorService.isValid(url)
+
         if (err == UrlError.NO_ERROR) {
             val id: String = hashService.hasUrl(url)
             val su = ShortUrl(
