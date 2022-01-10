@@ -1,6 +1,9 @@
 package es.unizar.urlshortener
 
-import es.unizar.urlshortener.core.usecases.*
+import es.unizar.urlshortener.core.usecases.CreateShortUrlUseCaseImpl
+import es.unizar.urlshortener.core.usecases.LogClickUseCaseImpl
+import es.unizar.urlshortener.core.usecases.QRUseCaseImpl
+import es.unizar.urlshortener.core.usecases.RedirectUseCaseImpl
 import es.unizar.urlshortener.infrastructure.delivery.ExternalData
 import es.unizar.urlshortener.infrastructure.delivery.HashServiceImpl
 import es.unizar.urlshortener.infrastructure.delivery.QRServiceImpl
@@ -12,6 +15,11 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.scheduling.annotation.AsyncConfigurer
 import org.springframework.scheduling.annotation.EnableAsync
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
+import springfox.documentation.builders.PathSelectors
+import springfox.documentation.builders.RequestHandlerSelectors
+import springfox.documentation.spi.DocumentationType
+import springfox.documentation.spring.web.plugins.Docket
+import springfox.documentation.swagger2.annotations.EnableSwagger2
 import java.util.concurrent.Executor
 
 
@@ -22,12 +30,22 @@ import java.util.concurrent.Executor
  */
 @EnableAsync
 @Configuration
+@EnableSwagger2
 class ApplicationConfiguration(
     @Autowired val shortUrlEntityRepository: ShortUrlEntityRepository,
     @Autowired val clickEntityRepository: ClickEntityRepository,
     @Autowired val qrEntityRepository: QREntityRepository,
     @Autowired val externalData: ExternalData
 ): AsyncConfigurer {
+
+    @Bean
+    fun api(): Docket {
+        return Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("es.unizar.urlshortener.infrastructure.delivery"))
+                .paths(PathSelectors.any())
+                .build()
+    }
 
     @Bean(name = ["QRExecutor"])
     fun createAsynchronousListenerExecutor(): Executor? {
