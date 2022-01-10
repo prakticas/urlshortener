@@ -10,6 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     env:
       apiKey: ${{ secrets.APIKEY}}
+      spring.rabbitmq.host: ${{ secrets.SPRING_RABBITMQ_HOST }}
+      spring.rabbitmq.username: ${{ secrets.SPRING_RABBITMQ_USERNAME }}
+      spring.rabbitmq.password: ${{ secrets.SPRING_RABBITMQ_PASSWORD }}
+      spring.rabbitmq.virtual-host: ${{ secrets.SPRING_RABBITMQ_VIRTUAL_HOST }}
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 11
