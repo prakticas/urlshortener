@@ -8,6 +8,9 @@ import es.unizar.urlshortener.core.usecases.LogClickUseCase
 import es.unizar.urlshortener.core.usecases.RedirectUseCase
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
+import org.apache.commons.csv.CSVRecord
+import org.springframework.context.annotation.Profile
+import org.springframework.core.io.InputStreamResource
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -31,6 +34,7 @@ interface MasiveUrlShortenerController {
  * **Note**: Spring Boot is able to discover this [RestController] without further configuration.
  */
 @RestController
+@Profile("MainNode")
 class MasiveUrlShortenerControllerImpl(
     val logClickUseCase: LogClickUseCase,
     val createShortUrlUseCase: CreateShortUrlUseCase)

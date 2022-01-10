@@ -2,21 +2,18 @@ package es.unizar.urlshortener.infrastructure.delivery
 
 import es.unizar.urlshortener.core.*
 import es.unizar.urlshortener.core.usecases.*
-import org.springframework.core.io.InputStreamResource
+import org.springframework.amqp.core.TopicExchange
+import org.springframework.amqp.rabbit.core.RabbitTemplate
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Profile
 import org.springframework.hateoas.server.mvc.linkTo
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
-import org.springframework.http.MediaType.parseMediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.multipart.MultipartFile
-import java.io.ByteArrayInputStream
 import java.net.URI
 import javax.servlet.http.HttpServletRequest
-import org.apache.commons.csv.CSVFormat
-import org.apache.commons.csv.CSVParser
-import java.io.StringWriter
 
 
 /**
@@ -68,6 +65,7 @@ data class ShortUrlDataOut(
  * **Note**: Spring Boot is able to discover this [RestController] without further configuration.
  */
 @RestController
+@Profile("MainNode")
 class UrlShortenerControllerImpl(
     val redirectUseCase: RedirectUseCase,
     val logClickUseCase: LogClickUseCase,
@@ -75,12 +73,16 @@ class UrlShortenerControllerImpl(
     val createQRUseCase: QRUseCase
 ) : UrlShortenerController {
 
+
+
     @GetMapping("/tiny-{id:.*}")
     override fun redirectTo(
         @PathVariable id: String,
         request: HttpServletRequest
     ): ResponseEntity<Void> =
         redirectUseCase.redirectTo(id).let {
+            //Encolar tarea generación QRCODE usando RabbitMQ
+
             logClickUseCase.logClick(id, ClickProperties(ip = request.remoteAddr))
             val h = HttpHeaders()
             h.location = URI.create(it.redirection.target)
@@ -101,6 +103,8 @@ class UrlShortenerControllerImpl(
             )
             //lo devuelvo por create es usado por la word 'it'
         ).let {
+
+
             val h = HttpHeaders()
             val url = linkTo<UrlShortenerControllerImpl> { redirectTo(it.hash, request) }.toUri()
             var qr: URI? = null
