@@ -30,6 +30,7 @@ class ClickEntity(
 class ShortUrlEntity(
     @Id
     val hash: String,
+    @Lob
     val target: String,
     val sponsor: String?,
     val created: OffsetDateTime,
