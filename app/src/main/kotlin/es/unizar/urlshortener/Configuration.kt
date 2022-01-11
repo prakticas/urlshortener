@@ -12,6 +12,7 @@ import es.unizar.urlshortener.infrastructure.repositories.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.annotation.AsyncConfigurer
 import org.springframework.scheduling.annotation.EnableAsync
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
@@ -31,11 +32,11 @@ import java.util.concurrent.Executor
 @EnableAsync
 @Configuration
 @EnableSwagger2
+@Profile("MainNode")
 class ApplicationConfiguration(
     @Autowired val shortUrlEntityRepository: ShortUrlEntityRepository,
     @Autowired val clickEntityRepository: ClickEntityRepository,
     @Autowired val qrEntityRepository: QREntityRepository,
-    @Autowired val externalData: ExternalData
 ): AsyncConfigurer {
 
     @Bean
@@ -67,7 +68,7 @@ class ApplicationConfiguration(
     fun qrRepositoryService() = QRRepositoryServiceImpl(qrEntityRepository)
 
     @Bean
-    fun validatorService() = ValidatorServiceImpl(externalData)
+    fun validatorService() = ValidatorServiceImpl()
 
     @Bean
     fun hashService() = HashServiceImpl()
