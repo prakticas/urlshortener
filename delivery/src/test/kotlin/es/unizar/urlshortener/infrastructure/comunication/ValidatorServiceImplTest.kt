@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 internal class ValidatorServiceImplConfig {
 
-
     @Bean
     fun ExternalDataImpl(): ExternalData = ExternalData()
 
@@ -23,8 +22,6 @@ internal class ValidatorServiceImplConfig {
 @SpringBootTest(classes = [ValidatorServiceImplConfig::class])
 internal class ValidatorServiceImplTest{
     @Autowired private lateinit var ExternalDataImpl: ExternalData
-
-
 
     @Test
     @Disabled
@@ -44,7 +41,6 @@ internal class ValidatorServiceImplTest{
         assertEquals(expected,actual)
     }
 
-
     @Test
     @Disabled
     fun `Url is not secure`(){
@@ -62,8 +58,6 @@ internal class ValidatorServiceImplTest{
         val expected = UrlError.NO_ERROR
         val actual = receiver.receiveMessage("https://www.google.com/")
         assertEquals(expected,actual)
-
     }
-
 
 }

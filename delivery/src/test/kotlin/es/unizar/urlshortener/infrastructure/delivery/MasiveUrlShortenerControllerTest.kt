@@ -4,6 +4,7 @@ import es.unizar.urlshortener.core.*
 import es.unizar.urlshortener.core.usecases.CreateShortUrlUseCase
 import es.unizar.urlshortener.core.usecases.LogClickUseCase
 import es.unizar.urlshortener.core.usecases.RedirectUseCase
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
 import org.springframework.beans.factory.annotation.Autowired
@@ -43,6 +44,7 @@ class MasiveUrlShortenerControllerTest {
 
 
     @Test
+    @Disabled("Es previo a SEE")
     fun `handleFileUpload returns a file if the file given has a correct structure`() {
         val urlWithError = ShortUrlWithError(
             url=ShortUrl("f684a3c4", Redirection("http://example.com/"),properties = ShortUrlProperties(ip= "127.0.0.1", hasQR = true))
@@ -62,8 +64,6 @@ class MasiveUrlShortenerControllerTest {
             .andDo(print())
             .andExpect(status().isCreated)
             .andExpect(content().string(response))
-
-
 
     }
 

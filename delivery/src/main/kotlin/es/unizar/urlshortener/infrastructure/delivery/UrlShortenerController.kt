@@ -73,16 +73,12 @@ class UrlShortenerControllerImpl(
     val createQRUseCase: QRUseCase
 ) : UrlShortenerController {
 
-
-
     @GetMapping("/tiny-{id:.*}")
     override fun redirectTo(
         @PathVariable id: String,
         request: HttpServletRequest
     ): ResponseEntity<Void> =
         redirectUseCase.redirectTo(id).let {
-            //Encolar tarea generación QRCODE usando RabbitMQ
-
             logClickUseCase.logClick(id, ClickProperties(ip = request.remoteAddr))
             val h = HttpHeaders()
             h.location = URI.create(it.redirection.target)
@@ -94,17 +90,14 @@ class UrlShortenerControllerImpl(
         data: ShortUrlDataIn,
         request: HttpServletRequest
     ): ResponseEntity<ShortUrlDataOut> =
-        //guardar la ip en la base de datos
+        // Save ip to database
         createShortUrlUseCase.create(
             url = data.url,
             data = ShortUrlProperties(
                 ip = request.remoteAddr,
                 sponsor = data.sponsor
             )
-            //lo devuelvo por create es usado por la word 'it'
         ).let {
-
-
             val h = HttpHeaders()
             val url = linkTo<UrlShortenerControllerImpl> { redirectTo(it.hash, request) }.toUri()
             var qr: URI? = null

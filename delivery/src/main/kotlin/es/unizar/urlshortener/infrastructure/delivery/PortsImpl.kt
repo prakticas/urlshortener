@@ -27,15 +27,9 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.PropertySource
 import org.springframework.stereotype.Component
 
-
-
 /**
  * Implementation of the port [ValidatorService].
  */
-
-
-
-
 class ValidatorServiceImpl : ValidatorService {
 
     @Autowired
@@ -46,15 +40,10 @@ class ValidatorServiceImpl : ValidatorService {
 
 
     override fun isValid(url: String) : UrlError{
-        val res = ValidatorRabbitSender(template!!, exchange!! ).validate(url)
+        val res = ValidatorRabbitSender(template!!, exchange!!).validate(url)
        return res
     }
-
-
-
 }
-
-
 
 /**
  * Implementation of the port [HashService].
