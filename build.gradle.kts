@@ -30,6 +30,7 @@ subprojects {
     }
     dependencies {
         "implementation"("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+
         // https://mvnrepository.com/artifact/com.google.zxing/javase
         "implementation"("com.google.zxing:javase:3.4.0")
         // https://mvnrepository.com/artifact/com.google.zxing/core
@@ -40,6 +41,8 @@ subprojects {
         "implementation"("org.webjars.npm:htmx.org:1.6.0")
         "implementation"("org.springframework.boot:spring-boot-starter-webflux")
         "testImplementation"("org.mockito:mockito-inline:2.13.0")
+        "implementation"("io.springfox:springfox-boot-starter:3.0.0")
+        //"implementation"("io.springfox:springfox-swagger-ui:3.0.0")
     }
 }
 
@@ -89,8 +92,6 @@ project(":delivery") {
         "testImplementation"("org.springframework.boot:spring-boot-starter-test")
         "testImplementation"("org.springframework.amqp:spring-rabbit-test")
         "testImplementation"("org.mockito.kotlin:mockito-kotlin:3.2.0")
-//        org.jetbrains.kotlin:kotlin-stdlib-jdk8
-//        org.jetbrains.kotlinx:org.jetbrains.kotlinx
     }
     tasks.getByName<BootJar>("bootJar") {
         enabled = false
