@@ -30,6 +30,7 @@ subprojects {
     }
     dependencies {
         "implementation"("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+
         // https://mvnrepository.com/artifact/com.google.zxing/javase
         "implementation"("com.google.zxing:javase:3.4.0")
         // https://mvnrepository.com/artifact/com.google.zxing/core
@@ -38,6 +39,8 @@ subprojects {
         "implementation"("com.google.zxing:zxing-parent:3.4.0")
         "implementation"("com.budiyev.android:code-scanner:2.1.0")
         "testImplementation"("org.mockito:mockito-inline:2.13.0")
+        "implementation"("io.springfox:springfox-boot-starter:3.0.0")
+        //"implementation"("io.springfox:springfox-swagger-ui:3.0.0")
     }
 }
 
