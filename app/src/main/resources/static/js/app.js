@@ -29,10 +29,10 @@ $(document).ready(
                 $("#table-results").show()
                 $("#result").html("")
                 $("#table-results tbody").empty()
-                $("#csv-button").prop("disabled", true)
                 // Upload file
                 const data = loadCSV()
                 if (!data) return
+                $("#csv-button").prop("disabled", true)
                 $.ajax({
                     type: "POST",
                     url: "/api/upload",
@@ -65,11 +65,12 @@ $(document).ready(
     });
 
 const setResultRow = ({url, qr}) => {
+    console.log({url, qr})
     $("#result").html(
         `<div class='alert alert-success lead'><a target='_blank' href='${url}'>${url}</a></div>`);
 
     if (qr != null){
-        $("#result").html(
+        $("#result").append(
             `<div class='alert alert-success lead'><a target='_blank' href='${qr}'>${qr}</a></div>`);
     }
 }

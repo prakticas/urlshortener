@@ -22,18 +22,14 @@ import java.net.http.HttpResponse
 @Profile("ValidatorReceiver")
 class ExternalData{
     @Value("\${apiKey}")
-    lateinit var  apiKey :String
-    fun apiKey():String= apiKey
-
-
-
+    lateinit var apiKey :String
+    fun apiKey(): String = apiKey
 }
 
 @Component
 @Profile("ValidatorReceiver")
 class Receiver(
     private val externalData:ExternalData){
-
 
     private fun checkSafety(url: String):Boolean{
 
@@ -42,7 +38,6 @@ class Receiver(
         val threatInfoRqt = Gson().toJson(body)
         val requestBody = "{threatInfo: $threatInfoRqt}"
 
-        val ak = externalData.apiKey()
         val client = HttpClient.newBuilder().build();
         val request = HttpRequest.newBuilder()
             .uri(URI.create("https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${externalData.apiKey()}"))

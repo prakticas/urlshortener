@@ -75,16 +75,22 @@ project(":delivery") {
     apply(plugin = "io.spring.dependency-management")
     dependencies {
         "implementation"(project(":core"))
-        "implementation" ("org.apache.commons:commons-csv:1.5")
+        "implementation"("org.apache.commons:commons-csv:1.5")
         "implementation"("org.springframework.boot:spring-boot-starter-hateoas")
         "implementation"("com.fasterxml.jackson.module:jackson-module-kotlin")
         "implementation"("commons-validator:commons-validator:1.6")
         "implementation"("com.google.guava:guava:23.0")
-        "implementation"( "com.google.code.gson:gson:2.8.5")
+        "implementation"("com.google.code.gson:gson:2.8.5")
+        "implementation"("org.springframework.boot:spring-boot-starter-amqp")
+        "implementation"("org.jetbrains.kotlin:kotlin-reflect")
+        "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.0")
+        "implementation"("org.springframework.boot:spring-boot-starter-amqp")
         "implementation"("org.springframework.boot:spring-boot-starter-amqp")
         "testImplementation"("org.springframework.boot:spring-boot-starter-test")
         "testImplementation"("org.springframework.amqp:spring-rabbit-test")
         "testImplementation"("org.mockito.kotlin:mockito-kotlin:3.2.0")
+//        org.jetbrains.kotlin:kotlin-stdlib-jdk8
+//        org.jetbrains.kotlinx:org.jetbrains.kotlinx
     }
     tasks.getByName<BootJar>("bootJar") {
         enabled = false

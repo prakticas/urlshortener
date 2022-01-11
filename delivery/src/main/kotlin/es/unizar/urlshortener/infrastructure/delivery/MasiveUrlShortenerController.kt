@@ -20,8 +20,10 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.servlet.function.ServerResponse.async
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
 import javax.servlet.http.HttpServletRequest
+import java.util.concurrent.*
 
 
 interface MasiveUrlShortenerController {
@@ -36,7 +38,6 @@ interface MasiveUrlShortenerController {
 @RestController
 @Profile("MainNode")
 class MasiveUrlShortenerControllerImpl(
-    val logClickUseCase: LogClickUseCase,
     val createShortUrlUseCase: CreateShortUrlUseCase)
     :MasiveUrlShortenerController{
 
@@ -55,21 +56,24 @@ class MasiveUrlShortenerControllerImpl(
             val csvParser = CSVParser(reader, CSVFormat.DEFAULT.withDelimiter(','))
             csvParser
                 .map{DataCSVIn(url = it.get(0), qr = it.get(1))}
-                .map{ dataCSVIn ->
-                    createShortUrlUseCase.createWithError(url = dataCSVIn.url, data = ShortUrlProperties(
-                        ip = request.remoteAddr,
-                        hasQR = dataCSVIn.hasQR()
-                    )).let {
+                .forEach { dataCSVIn ->
+                    createShortUrlUseCase.createWithError(
+                        url = dataCSVIn.url, data = ShortUrlProperties(
+                            ip = request.remoteAddr,
+                            hasQR = dataCSVIn.hasQR()
+                        )
+                    ).let {
                         val uri: String
                         var qr = ""
                         val origin: String
-                        if (it.url != null){
-                            uri = linkTo<UrlShortenerControllerImpl> { redirectTo(it.url!!.hash, request) }.toUri().toString()
+                        if (it.url != null) {
+                            uri = linkTo<UrlShortenerControllerImpl> { redirectTo(it.url!!.hash, request) }.toUri()
+                                .toString()
                             qr = if (it.url!!.properties.hasQR == true)
-                                linkTo<QRControllerImpl> { redirectTo(it.url!!.hash, request) }.toUri().toString() else ""
+                                linkTo<QRControllerImpl> { redirectTo(it.url!!.hash, request) }.toUri()
+                                    .toString() else ""
                             origin = it.url!!.redirection.target
-                        }
-                        else{
+                        } else {
                             origin = it.origin
                             uri = it.error.msg
                         }

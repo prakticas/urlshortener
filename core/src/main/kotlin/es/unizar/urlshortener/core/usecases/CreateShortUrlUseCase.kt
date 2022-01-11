@@ -2,7 +2,9 @@ package es.unizar.urlshortener.core.usecases
 
 import es.unizar.urlshortener.core.*
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.scheduling.annotation.Async
 import java.util.Date
+import java.util.concurrent.CompletableFuture
 
 /**
  * Given an url returns the key that is used to create a short URL.
@@ -65,7 +67,7 @@ class CreateShortUrlUseCaseImpl(
 
 
         } else {
-            return ShortUrlWithError(
+            return  ShortUrlWithError(
                 origin = url,
                 error = err
             )

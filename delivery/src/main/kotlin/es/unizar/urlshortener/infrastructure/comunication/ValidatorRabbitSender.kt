@@ -12,8 +12,6 @@ class ValidatorRabbitSender(
     private val template: RabbitTemplate,
     private val exchange: TopicExchange) {
 
-
-
     fun validate(url: String): UrlError {
         return  template.convertSendAndReceive(exchange.name, "rpc", url)  as UrlError
     }
