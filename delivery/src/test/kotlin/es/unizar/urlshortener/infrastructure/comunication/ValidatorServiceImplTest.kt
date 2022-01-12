@@ -24,7 +24,6 @@ internal class ValidatorServiceImplTest{
     @Autowired private lateinit var ExternalDataImpl: ExternalData
 
     @Test
-    @Disabled
     fun `Url is not  correct`(){
         val receiver = Receiver(ExternalDataImpl)
         val expected = UrlError.INCORRECT_URL
@@ -33,7 +32,6 @@ internal class ValidatorServiceImplTest{
     }
 
     @Test
-    @Disabled
     fun `Url is not  available`(){
         val receiver = Receiver(ExternalDataImpl)
         val expected = UrlError.NOT_AVAILABLE
@@ -42,7 +40,6 @@ internal class ValidatorServiceImplTest{
     }
 
     @Test
-    @Disabled
     fun `Url is not secure`(){
         val receiver = Receiver(ExternalDataImpl)
         val expected = UrlError.NOT_SECURE
@@ -52,7 +49,6 @@ internal class ValidatorServiceImplTest{
     }
 
     @Test
-    @Disabled
     fun `Url has the correct format and is either available and secure`(){
         val receiver = Receiver(ExternalDataImpl)
         val expected = UrlError.NO_ERROR
